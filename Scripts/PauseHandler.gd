@@ -1,6 +1,6 @@
 extends Node
 
-@onready var pause_menu :Object= get_node("../PauseMenu")
+@onready var pause_menu: Object = get_node("../PauseMenu")
 
 func _process(_delta):
 	if Input.is_action_just_pressed("Pause"):

@@ -1,5 +1,6 @@
-[gd_scene load_steps=14 format=3 uid="uid://dwwnfd0me7r87"]
+[gd_scene load_steps=15 format=3 uid="uid://dwwnfd0me7r87"]
 
+[ext_resource type="Script" path="res://Scripts/network_manager.gd" id="1_k0ucf"]
 [ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="1_y2put"]
 [ext_resource type="Script" path="res://Scripts/EnemySpawner.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://dt4uuw0j4luc8" path="res://GameObjects/Player.tscn" id="3"]
@@ -68,17 +69,22 @@ corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [node name="World" type="Node3D"]
+script = ExtResource("1_k0ucf")
 
 [node name="Clock" parent="." instance=ExtResource("1_y2put")]
 
-[node name="Player" parent="." instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 33)
-
-[node name="Enemies" type="Node3D" parent="."]
+[node name="Enemies" type="Node3D" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("2")
+player = NodePath("Player")
 
 [node name="SpawnTimer" type="Timer" parent="Enemies"]
 autostart = true
+
+[node name="Player" parent="Enemies" node_paths=PackedStringArray("clock", "health_bar", "game_over_popup") instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 33)
+clock = NodePath("../../Clock")
+health_bar = NodePath("../../CanvasLayer/HealthBar")
+game_over_popup = NodePath("../../CanvasLayer/GameOver")
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 25, 50)
@@ -105,7 +111,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25.0486, 0)
 light_energy = 10.0
 omni_range = 100.344
 
-[node name="GameOver" type="Panel" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GameOver" type="Panel" parent="CanvasLayer"]
 visible = false
 anchors_preset = 8
 anchor_left = 0.5
@@ -119,7 +127,7 @@ offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="GameOver"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOver"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -133,29 +141,29 @@ offset_bottom = 104.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="GameOver" type="Label" parent="GameOver/VBoxContainer"]
+[node name="GameOver" type="Label" parent="CanvasLayer/GameOver/VBoxContainer"]
 layout_mode = 2
 text = "Game Over"
 
-[node name="Time" type="Label" parent="GameOver/VBoxContainer"]
+[node name="Time" type="Label" parent="CanvasLayer/GameOver/VBoxContainer"]
 layout_mode = 2
 text = "Time survived:
 0s"
 
-[node name="Destroyed" type="Label" parent="GameOver/VBoxContainer"]
+[node name="Destroyed" type="Label" parent="CanvasLayer/GameOver/VBoxContainer"]
 layout_mode = 2
 text = "Robots destroyed:
 0"
 
-[node name="Restart" type="Button" parent="GameOver/VBoxContainer"]
+[node name="Restart" type="Button" parent="CanvasLayer/GameOver/VBoxContainer"]
 layout_mode = 2
 text = "Restart"
 
-[node name="Quit" type="Button" parent="GameOver/VBoxContainer"]
+[node name="Quit" type="Button" parent="CanvasLayer/GameOver/VBoxContainer"]
 layout_mode = 2
 text = "Quit to menu"
 
-[node name="PauseMenu" type="Panel" parent="."]
+[node name="PauseMenu" type="Panel" parent="CanvasLayer"]
 process_mode = 3
 visible = false
 anchors_preset = 15
@@ -165,7 +173,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("13")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PauseMenu"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PauseMenu"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -179,20 +187,20 @@ offset_bottom = 48.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Paused" type="Label" parent="PauseMenu/VBoxContainer"]
+[node name="Paused" type="Label" parent="CanvasLayer/PauseMenu/VBoxContainer"]
 layout_mode = 2
 text = "Paused"
 horizontal_alignment = 1
 
-[node name="Resume" type="Button" parent="PauseMenu/VBoxContainer"]
+[node name="Resume" type="Button" parent="CanvasLayer/PauseMenu/VBoxContainer"]
 layout_mode = 2
 text = "Resume"
 
-[node name="Menu" type="Button" parent="PauseMenu/VBoxContainer"]
+[node name="Menu" type="Button" parent="CanvasLayer/PauseMenu/VBoxContainer"]
 layout_mode = 2
 text = "Main Menu"
 
-[node name="HealthBar" type="ProgressBar" parent="."]
+[node name="HealthBar" type="ProgressBar" parent="CanvasLayer"]
 offset_left = 1.0
 offset_top = 19.0
 offset_right = 181.0
@@ -202,7 +210,7 @@ theme_override_styles/fill = SubResource("StyleBoxFlat_pch6w")
 step = 1.0
 value = 100.0
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="CanvasLayer"]
 offset_left = 1.0
 offset_top = 19.0
 offset_right = 69.0
@@ -211,12 +219,16 @@ text = "Health:"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="PauseHandler" type="Node" parent="."]
+[node name="PauseHandler" type="Node" parent="CanvasLayer"]
 process_mode = 3
 script = ExtResource("4")
 
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://GameObjects/Player.tscn", "res://GameObjects/Enemy.tscn")
+spawn_path = NodePath("../Enemies")
+
 [connection signal="timeout" from="Enemies/SpawnTimer" to="Enemies" method="_on_SpawnTimer_timeout"]
-[connection signal="pressed" from="GameOver/VBoxContainer/Restart" to="PauseHandler" method="restart"]
-[connection signal="pressed" from="GameOver/VBoxContainer/Quit" to="PauseHandler" method="menu"]
-[connection signal="pressed" from="PauseMenu/VBoxContainer/Resume" to="PauseHandler" method="pause"]
-[connection signal="pressed" from="PauseMenu/VBoxContainer/Menu" to="PauseHandler" method="menu"]
+[connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Restart" to="CanvasLayer/PauseHandler" method="restart"]
+[connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Quit" to="CanvasLayer/PauseHandler" method="menu"]
+[connection signal="pressed" from="CanvasLayer/PauseMenu/VBoxContainer/Resume" to="CanvasLayer/PauseHandler" method="pause"]
+[connection signal="pressed" from="CanvasLayer/PauseMenu/VBoxContainer/Menu" to="CanvasLayer/PauseHandler" method="menu"]
