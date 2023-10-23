@@ -10,13 +10,17 @@ func _process(_delta):
 		restart()
 		
 func pause():
-	get_tree().paused = !get_tree().paused
-	pause_menu.visible = get_tree().paused
+	#get_tree().paused = !get_tree().paused
+	pause_menu.visible = !pause_menu.visible
 
 func restart():
-	get_tree().paused=false
-	get_tree().change_scene_to_file("res://Scenes/World.tscn")
+	pass
+	#get_tree().change_scene_to_file("res://Scenes/World.tscn")
 
 func menu():
-	get_tree().paused=false
+	get_tree().paused = true
+	if multiplayer.is_server():
+		get_tree().create_timer(0.1).timeout.connect(multiplayer.multiplayer_peer.close)
+	else:
+		multiplayer.multiplayer_peer.close()
 	get_tree().change_scene_to_file("res://Scenes/Menu.tscn")

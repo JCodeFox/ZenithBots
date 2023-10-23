@@ -68,23 +68,21 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[node name="World" type="Node3D"]
+[node name="World" type="Node3D" node_paths=PackedStringArray("players_node", "enemies_node", "clock", "health_bar", "game_over_popup")]
 script = ExtResource("1_k0ucf")
+player_scene = ExtResource("3")
+players_node = NodePath("Players")
+enemies_node = NodePath("Enemies")
+clock = NodePath("Clock")
+health_bar = NodePath("CanvasLayer/HealthBar")
+game_over_popup = NodePath("CanvasLayer/GameOver")
 
 [node name="Clock" parent="." instance=ExtResource("1_y2put")]
 
-[node name="Enemies" type="Node3D" parent="." node_paths=PackedStringArray("player")]
+[node name="Enemies" type="Node3D" parent="."]
 script = ExtResource("2")
-player = NodePath("Player")
 
-[node name="SpawnTimer" type="Timer" parent="Enemies"]
-autostart = true
-
-[node name="Player" parent="Enemies" node_paths=PackedStringArray("clock", "health_bar", "game_over_popup") instance=ExtResource("3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 33)
-clock = NodePath("../../Clock")
-health_bar = NodePath("../../CanvasLayer/HealthBar")
-game_over_popup = NodePath("../../CanvasLayer/GameOver")
+[node name="Players" type="Node3D" parent="."]
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 25, 50)
@@ -224,10 +222,13 @@ process_mode = 3
 script = ExtResource("4")
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
-_spawnable_scenes = PackedStringArray("res://GameObjects/Player.tscn", "res://GameObjects/Enemy.tscn")
+_spawnable_scenes = PackedStringArray("res://GameObjects/Enemy.tscn")
 spawn_path = NodePath("../Enemies")
 
-[connection signal="timeout" from="Enemies/SpawnTimer" to="Enemies" method="_on_SpawnTimer_timeout"]
+[node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://GameObjects/Player.tscn")
+spawn_path = NodePath("../Players")
+
 [connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Restart" to="CanvasLayer/PauseHandler" method="restart"]
 [connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Quit" to="CanvasLayer/PauseHandler" method="menu"]
 [connection signal="pressed" from="CanvasLayer/PauseMenu/VBoxContainer/Resume" to="CanvasLayer/PauseHandler" method="pause"]

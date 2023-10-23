@@ -1,11 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://dt4uuw0j4luc8"]
+[gd_scene load_steps=13 format=3 uid="uid://dt4uuw0j4luc8"]
 
 [ext_resource type="Texture2D" uid="uid://d2xvgmym8257j" path="res://Sprites/Shadow.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dhis4dtpi4rem" path="res://Sprites/Star.png" id="2"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://dfbk3aknjha83" path="res://Models/LilBot.tscn" id="4_ywy82"]
 [ext_resource type="Material" path="res://Models/PlayerAntennaCap.material" id="9"]
-[ext_resource type="Material" path="res://Models/PlayerMetal.material" id="10"]
+[ext_resource type="Material" uid="uid://b725bkffgvsqq" path="res://Models/PlayerMetal.material" id="10"]
 
 [sub_resource type="BoxShape3D" id="18"]
 size = Vector3(2, 6, 2)
@@ -29,6 +29,16 @@ billboard_mode = 1
 [sub_resource type="QuadMesh" id="6"]
 material = SubResource("5")
 size = Vector2(0.8, 0.8)
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_2olmq"]
+properties/0/path = NodePath(".:transform")
+properties/0/spawn = true
+properties/0/sync = true
+properties/0/watch = false
+properties/1/path = NodePath(".:velocity")
+properties/1/spawn = true
+properties/1/sync = true
+properties/1/watch = false
 
 [node name="Player" type="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
@@ -66,6 +76,17 @@ surface_material_override/0 = ExtResource("9")
 
 [node name="Body" parent="LilBot/RobotMasterPos" index="3"]
 surface_material_override/0 = ExtResource("10")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_interval = 0.1
+delta_interval = 0.1
+replication_config = SubResource("SceneReplicationConfig_2olmq")
+
+[node name="Usertag" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.03474, 0)
+billboard = 1
+text = "Player"
+font_size = 256
 
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
 

@@ -3,7 +3,7 @@ extends CharacterBody3D
 const ACCEL: int = 4
 const DEACCEL: int = 8
 
-var player: Object
+var players_node: Node
 
 @onready var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var spawn: Vector3 = transform.origin
@@ -22,9 +22,14 @@ func _physics_process(delta):
 	else:
 		velocity.y = 0
 	
-	if not player:
+	if not players_node or players_node.get_child_count() == 0:
 		move_and_slide()
 		return
+	
+	var player: Node = players_node.get_child(0)
+	for p in players_node.get_children():
+		if global_position.distance_to(p.global_position) < global_position.distance_to(player.global_position):
+			player = p
 	
 	var move_dir = player.transform.origin - transform.origin
 	if player.powerup_time and move_dir.length() < 20:
@@ -51,16 +56,17 @@ func _physics_process(delta):
 		transform.origin = spawn
 
 func _on_Area_body_entered(body):
-	if body == player:
-		if player.powerup_time:
-			player.enemies_destroyed += 1
+	if not multiplayer.is_server():
+		return
+	if players_node and body in players_node.get_children():
+		if body.powerup_time:
+			body.enemies_destroyed += 1
 			var particle_node: Object = get_node("../../ExplosionParticles")
 			particle_node.transform.origin = transform.origin
 			particle_node.emitting = true
 			particle_node.restart()
 			queue_free()
 		else:
-			var d = (player.transform.origin - transform.origin).normalized()
+			var d = (body.transform.origin - transform.origin).normalized()
 			d.y = 0
-			player.velocity += d * 75
-			player.health -= 5
+			body.get_hit(d)
