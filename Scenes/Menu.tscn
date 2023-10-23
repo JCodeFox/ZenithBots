@@ -1,0 +1,121 @@
+[gd_scene load_steps=10 format=3 uid="uid://bkotauwdmyrwi"]
+
+[ext_resource type="PackedScene" uid="uid://dfbk3aknjha83" path="res://Models/LilBot.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="2_14epn"]
+[ext_resource type="Material" path="res://Models/PlayerAntennaCap.material" id="8"]
+[ext_resource type="Material" path="res://Models/PlayerMetal.material" id="9"]
+[ext_resource type="Script" path="res://Scripts/Menu.gd" id="10"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6puvu"]
+albedo_color = Color(0.796078, 0.745098, 0.498039, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_cqugi"]
+material = SubResource("StandardMaterial3D_6puvu")
+size = Vector2(200, 200)
+
+[sub_resource type="Environment" id="17"]
+background_mode = 1
+background_color = Color(0.831373, 0.792157, 0.545098, 1)
+ambient_light_color = Color(1, 1, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="18"]
+bg_color = Color(0.541176, 0.541176, 0.541176, 0.521569)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0.541176, 0.541176, 0.541176, 0)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Menu" type="Node3D"]
+script = ExtResource("10")
+
+[node name="Wall" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 5.012, 0, -10.0195)
+mesh = SubResource("PlaneMesh_cqugi")
+
+[node name="Clock" parent="." instance=ExtResource("2_14epn")]
+transform = Transform3D(10, 0, 0, 0, -9.70393e-09, -10, 0, 0.222, -4.37114e-07, 5.012, 0, -10)
+
+[node name="LilBot" parent="." instance=ExtResource("2")]
+transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 6.1099, -2, -6.183)
+
+[node name="LilBot2" parent="." instance=ExtResource("2")]
+transform = Transform3D(-0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, -0.984808, 0.055, -2, -8.004)
+
+[node name="LilBot3" parent="." instance=ExtResource("2")]
+transform = Transform3D(-0.766044, 0, -0.642788, 0, 1, 0, 0.642788, 0, -0.766044, -4.782, -2, -8.004)
+
+[node name="LilBot4" parent="." instance=ExtResource("2")]
+transform = Transform3D(-0.766045, 0, 0.642787, 0, 1, 0, -0.642787, 0, -0.766045, 2.0899, -2, -4.204)
+
+[node name="AnttenaSphere" parent="LilBot4/RobotMasterPos/Antenna" index="0"]
+surface_material_override/0 = ExtResource("8")
+
+[node name="Body" parent="LilBot4/RobotMasterPos" index="3"]
+surface_material_override/0 = ExtResource("9")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.175, 0, 2)
+environment = SubResource("17")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.12571)
+light_energy = 5.0
+omni_range = 15.6925
+
+[node name="Label" type="Label" parent="."]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 201.0
+offset_bottom = 34.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 30
+text = "Zenith Bots by Jcodefox (foxtatoe)"
+
+[node name="Play" type="Button" parent="."]
+offset_left = 110.0
+offset_top = 100.0
+offset_right = 260.0
+offset_bottom = 150.0
+text = "Play"
+
+[node name="Quit" type="Button" parent="."]
+offset_left = 110.0
+offset_top = 163.327
+offset_right = 260.0
+offset_bottom = 213.327
+text = "Quit"
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = -221.0
+offset_right = 663.0
+offset_bottom = -21.0
+grow_vertical = 0
+theme_override_styles/panel = SubResource("18")
+
+[node name="Instructions" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 5.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Zenith: The time at which something is most powerful.
+
+Survive as long as possible by avoiding the gray robots.
+You can destroy the robots and move faster during your Zenith.
+The Zenith is indicated by a blue background and star particles around the player.
+
+(WASD to move)"
+
+[connection signal="pressed" from="Play" to="." method="_on_Play_pressed"]
+[connection signal="pressed" from="Quit" to="." method="_on_Quit_pressed"]
+
+[editable path="LilBot4"]

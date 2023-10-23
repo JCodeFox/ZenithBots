@@ -1,0 +1,47 @@
+[gd_scene load_steps=7 format=3 uid="uid://she7pqw8wik8"]
+
+[ext_resource type="Texture2D" uid="uid://p0ieudub5esn" path="res://Sprites/ClockFaceZ.png" id="1_l44og"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gf7v1"]
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="PlaneMesh" id="1"]
+material = SubResource("StandardMaterial3D_gf7v1")
+size = Vector2(0.05, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mra30"]
+albedo_color = Color(0.87451, 0.839216, 0.580392, 1)
+albedo_texture = ExtResource("1_l44og")
+uv1_scale = Vector3(0.5, 1, 0.5)
+uv1_offset = Vector3(0.5, 0, 0.5)
+uv1_triplanar = true
+
+[sub_resource type="CylinderMesh" id="3"]
+material = SubResource("StandardMaterial3D_mra30")
+top_radius = 1.0
+bottom_radius = 1.0
+height = 0.1
+
+[sub_resource type="CylinderShape3D" id="5"]
+height = 0.1
+radius = 1.0
+
+[node name="Clock" type="Node3D"]
+transform = Transform3D(45, 0, 0, 0, 1, 0, 0, 0, 45, 0, 0, 0)
+
+[node name="Hand" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="Hand" type="MeshInstance3D" parent="Hand"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4)
+mesh = SubResource("1")
+
+[node name="ClockFace" type="StaticBody3D" parent="."]
+collision_layer = 3
+collision_mask = 0
+
+[node name="Ground" type="MeshInstance3D" parent="ClockFace"]
+mesh = SubResource("3")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ClockFace"]
+shape = SubResource("5")

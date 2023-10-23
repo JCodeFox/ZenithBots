@@ -1,0 +1,222 @@
+[gd_scene load_steps=14 format=3 uid="uid://dwwnfd0me7r87"]
+
+[ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="1_y2put"]
+[ext_resource type="Script" path="res://Scripts/EnemySpawner.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dt4uuw0j4luc8" path="res://GameObjects/Player.tscn" id="3"]
+[ext_resource type="Script" path="res://Scripts/PauseHandler.gd" id="4"]
+
+[sub_resource type="Environment" id="Environment_vldyc"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.368627, 0.368627, 0.368627, 1)
+
+[sub_resource type="Animation" id="9"]
+length = 24.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:environment:background_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 8.8, 9, 9.2, 9.8, 10, 10.2, 10.8, 11, 11.2, 11.8, 12, 20.8, 21, 21.2, 21.8, 22, 22.2, 22.8, 23, 23.2, 23.8, 24),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(0, 0, 0, 1), Color(0, 0, 0, 1), Color(0, 0, 0.392157, 1), Color(0, 0, 0, 1), Color(0, 0, 0, 1), Color(0, 0, 0.588235, 1), Color(0, 0, 0, 1), Color(0, 0, 0, 1), Color(0, 0, 0.784314, 1), Color(0, 0, 0, 1), Color(0, 0, 0, 1), Color(0, 0, 1, 1), Color(0, 0, 1, 1), Color(0, 0, 0.784314, 1), Color(0, 0, 1, 1), Color(0, 0, 1, 1), Color(0, 0, 0.588235, 1), Color(0, 0, 1, 1), Color(0, 0, 1, 1), Color(0, 0, 0.392157, 1), Color(0, 0, 1, 1), Color(0, 0, 1, 1), Color(0, 0, 0, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_stu7t"]
+_data = {
+"CameraTimeEffects": SubResource("9")
+}
+
+[sub_resource type="ParticleProcessMaterial" id="10"]
+direction = Vector3(0, 1, 0)
+
+[sub_resource type="StandardMaterial3D" id="11"]
+shading_mode = 0
+albedo_color = Color(0.498039, 0.498039, 0.498039, 1)
+
+[sub_resource type="PrismMesh" id="12"]
+material = SubResource("11")
+size = Vector3(0.5, 0.5, 0.5)
+
+[sub_resource type="StyleBoxFlat" id="13"]
+bg_color = Color(0, 0, 0, 0.501961)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yk7x0"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pch6w"]
+bg_color = Color(1, 0, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="World" type="Node3D"]
+
+[node name="Clock" parent="." instance=ExtResource("1_y2put")]
+
+[node name="Player" parent="." instance=ExtResource("3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 33)
+
+[node name="Enemies" type="Node3D" parent="."]
+script = ExtResource("2")
+
+[node name="SpawnTimer" type="Timer" parent="Enemies"]
+autostart = true
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 25, 50)
+environment = SubResource("Environment_vldyc")
+far = 200.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Camera3D"]
+autoplay = "CameraTimeEffects"
+libraries = {
+"": SubResource("AnimationLibrary_stu7t")
+}
+
+[node name="ExplosionParticles" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.56345, 0)
+emitting = false
+lifetime = 5.0
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("10")
+draw_pass_1 = SubResource("12")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25.0486, 0)
+light_energy = 10.0
+omni_range = 100.344
+
+[node name="GameOver" type="Panel" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -150.0
+offset_right = 150.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="GameOver"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -104.0
+offset_right = 100.0
+offset_bottom = 104.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameOver" type="Label" parent="GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Game Over"
+
+[node name="Time" type="Label" parent="GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Time survived:
+0s"
+
+[node name="Destroyed" type="Label" parent="GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Robots destroyed:
+0"
+
+[node name="Restart" type="Button" parent="GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Restart"
+
+[node name="Quit" type="Button" parent="GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Quit to menu"
+
+[node name="PauseMenu" type="Panel" parent="."]
+process_mode = 3
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("13")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -48.0
+offset_right = 48.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Paused" type="Label" parent="PauseMenu/VBoxContainer"]
+layout_mode = 2
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="Resume" type="Button" parent="PauseMenu/VBoxContainer"]
+layout_mode = 2
+text = "Resume"
+
+[node name="Menu" type="Button" parent="PauseMenu/VBoxContainer"]
+layout_mode = 2
+text = "Main Menu"
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+offset_left = 1.0
+offset_top = 19.0
+offset_right = 181.0
+offset_bottom = 51.0
+theme_override_styles/background = SubResource("StyleBoxFlat_yk7x0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_pch6w")
+step = 1.0
+value = 100.0
+
+[node name="Label" type="Label" parent="."]
+offset_left = 1.0
+offset_top = 19.0
+offset_right = 69.0
+offset_bottom = 51.0
+text = "Health:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseHandler" type="Node" parent="."]
+process_mode = 3
+script = ExtResource("4")
+
+[connection signal="timeout" from="Enemies/SpawnTimer" to="Enemies" method="_on_SpawnTimer_timeout"]
+[connection signal="pressed" from="GameOver/VBoxContainer/Restart" to="PauseHandler" method="restart"]
+[connection signal="pressed" from="GameOver/VBoxContainer/Quit" to="PauseHandler" method="menu"]
+[connection signal="pressed" from="PauseMenu/VBoxContainer/Resume" to="PauseHandler" method="pause"]
+[connection signal="pressed" from="PauseMenu/VBoxContainer/Menu" to="PauseHandler" method="menu"]
