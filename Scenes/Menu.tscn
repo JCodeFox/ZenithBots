@@ -69,41 +69,57 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.12571)
 light_energy = 5.0
 omni_range = 15.6925
 
-[node name="Label" type="Label" parent="."]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 201.0
-offset_bottom = 34.0
+[node name="Main" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 110.0
+offset_top = 100.0
+offset_right = 150.0
+offset_bottom = 140.0
+
+[node name="Label" type="Label" parent="Main"]
+layout_mode = 0
+offset_left = -90.0
+offset_top = -80.0
+offset_right = 400.0
+offset_bottom = -35.0
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_font_sizes/font_size = 30
 text = "Zenith Bots by Jcodefox (foxtatoe)"
 
-[node name="Play" type="Button" parent="."]
-offset_left = 110.0
-offset_top = 100.0
-offset_right = 260.0
-offset_bottom = 150.0
-text = "Play"
+[node name="Play" type="Button" parent="Main"]
+layout_mode = 0
+offset_right = 150.0
+offset_bottom = 50.0
+text = "Play Classic"
 
-[node name="Quit" type="Button" parent="."]
-offset_left = 110.0
-offset_top = 163.327
-offset_right = 260.0
-offset_bottom = 213.327
+[node name="PlayMultiplayer" type="Button" parent="Main"]
+layout_mode = 0
+offset_left = 166.0
+offset_right = 316.0
+offset_bottom = 50.0
+text = "Play Multiplayer"
+
+[node name="Quit" type="Button" parent="Main"]
+layout_mode = 0
+offset_top = 63.327
+offset_right = 150.0
+offset_bottom = 113.327
 text = "Quit"
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="Main"]
+layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 9.0
-offset_top = -221.0
-offset_right = 663.0
-offset_bottom = -21.0
+offset_left = -101.0
+offset_top = 287.0
+offset_right = 553.0
+offset_bottom = 487.0
 grow_vertical = 0
 theme_override_styles/panel = SubResource("18")
 
-[node name="Instructions" type="Label" parent="Panel"]
+[node name="Instructions" type="Label" parent="Main/Panel"]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 5.0
@@ -116,7 +132,64 @@ The Zenith is indicated by a blue background and star particles around the playe
 
 (WASD to move)"
 
-[connection signal="pressed" from="Play" to="." method="_on_Play_pressed"]
-[connection signal="pressed" from="Quit" to="." method="_on_Quit_pressed"]
+[node name="Multiplayer" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Multiplayer"]
+layout_mode = 0
+offset_left = 62.0
+offset_top = 90.0
+offset_right = 312.0
+offset_bottom = 227.0
+
+[node name="IP" type="LineEdit" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "Server IP"
+alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Multiplayer/VBoxContainer"]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="Name" type="LineEdit" parent="Multiplayer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Username"
+alignment = 1
+
+[node name="ColorPickerButton" type="ColorPickerButton" parent="Multiplayer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+color = Color(0, 0, 1, 1)
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Join" type="Button" parent="Multiplayer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Join Game"
+
+[node name="Host" type="Button" parent="Multiplayer/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Host Game"
+
+[node name="Back" type="Button" parent="Multiplayer/VBoxContainer"]
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="Main/Play" to="." method="_on_Play_pressed"]
+[connection signal="pressed" from="Main/PlayMultiplayer" to="." method="_on_play_multiplayer_pressed"]
+[connection signal="pressed" from="Main/Quit" to="." method="_on_Quit_pressed"]
+[connection signal="pressed" from="Multiplayer/VBoxContainer/HBoxContainer2/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="Multiplayer/VBoxContainer/HBoxContainer2/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="Multiplayer/VBoxContainer/Back" to="." method="_on_back_pressed"]
 
 [editable path="LilBot4"]

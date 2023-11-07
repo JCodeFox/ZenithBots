@@ -24,6 +24,10 @@ run/main_scene="res://Scenes/Menu.tscn"
 config/features=PackedStringArray("4.1")
 config/icon="res://Sprites/clockIcon.png"
 
+[autoload]
+
+GlobalData="*res://Scripts/global_data.gd"
+
 [input]
 
 Forward={

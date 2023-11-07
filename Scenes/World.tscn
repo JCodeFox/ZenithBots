@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://dwwnfd0me7r87"]
+[gd_scene load_steps=17 format=3 uid="uid://dwwnfd0me7r87"]
 
 [ext_resource type="Script" path="res://Scripts/network_manager.gd" id="1_k0ucf"]
 [ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="1_y2put"]
@@ -68,6 +68,12 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_5vjjy"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nlvo3"]
+size = Vector3(50, 1, 50)
+
 [node name="World" type="Node3D" node_paths=PackedStringArray("players_node", "enemies_node", "clock", "health_bar", "game_over_popup")]
 script = ExtResource("1_k0ucf")
 player_scene = ExtResource("3")
@@ -84,12 +90,13 @@ script = ExtResource("2")
 
 [node name="Players" type="Node3D" parent="."]
 
-[node name="Camera3D" type="Camera3D" parent="."]
+[node name="MainCam" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 25, 50)
 environment = SubResource("Environment_vldyc")
+current = true
 far = 200.0
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Camera3D"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="MainCam"]
 autoplay = "CameraTimeEffects"
 libraries = {
 "": SubResource("AnimationLibrary_stu7t")
@@ -228,6 +235,26 @@ spawn_path = NodePath("../Enemies")
 [node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("res://GameObjects/Player.tscn")
 spawn_path = NodePath("../Players")
+
+[node name="LobbyCam" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 525, 50)
+environment = SubResource("Environment_vldyc")
+current = true
+far = 200.0
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 525.049, 0)
+light_energy = 10.0
+omni_range = 100.344
+
+[node name="LobbyGround" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 500, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LobbyGround"]
+shape = SubResource("BoxShape3D_5vjjy")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="LobbyGround"]
+mesh = SubResource("BoxMesh_nlvo3")
 
 [connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Restart" to="CanvasLayer/PauseHandler" method="restart"]
 [connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Quit" to="CanvasLayer/PauseHandler" method="menu"]
