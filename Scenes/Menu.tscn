@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dfbk3aknjha83" path="res://Models/LilBot.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="2_14epn"]
-[ext_resource type="Material" path="res://Models/PlayerAntennaCap.material" id="8"]
+[ext_resource type="Material" uid="uid://064ko04ie1ui" path="res://Models/PlayerAntennaCap.material" id="8"]
 [ext_resource type="Material" uid="uid://b725bkffgvsqq" path="res://Models/PlayerMetal.material" id="9"]
 [ext_resource type="Script" path="res://Scripts/Menu.gd" id="10"]
 
@@ -167,6 +167,7 @@ alignment = 1
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 color = Color(0, 0, 1, 1)
+edit_alpha = false
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="Multiplayer/VBoxContainer"]
 layout_mode = 2

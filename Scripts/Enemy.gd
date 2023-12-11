@@ -60,11 +60,7 @@ func _on_Area_body_entered(body):
 		return
 	if players_node and body in players_node.get_children():
 		if body.powerup_time:
-			body.enemies_destroyed += 1
-			var particle_node: Object = get_node("../../ExplosionParticles")
-			particle_node.transform.origin = transform.origin
-			particle_node.emitting = true
-			particle_node.restart()
+			body.rpc_id(body.get_multiplayer_authority(), "enemy_destroyed")
 			queue_free()
 		else:
 			var d = (body.transform.origin - transform.origin).normalized()

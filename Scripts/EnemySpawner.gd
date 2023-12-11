@@ -3,12 +3,23 @@ extends Node3D
 var scene := preload("res://GameObjects/Enemy.tscn")
 @export var players_node: Node
 var wait: float = 1.0
+var running: bool = false
 
 func begin():
 	if multiplayer.is_server():
 		get_tree().create_timer(wait).timeout.connect(spawnTimer_timeout)
+		running = true
+
+func stop():
+	for enemy in get_children():
+		remove_child(enemy)
+		enemy.queue_free()
+	wait = 1.0
+	running = false
 
 func spawnTimer_timeout():
+	if not running:
+		return
 	if not players_node:
 		push_warning("Players node not set!")
 		return
@@ -22,7 +33,7 @@ func spawnTimer_timeout():
 		scene_instance.transform.origin.z = pos_mult.y * 40
 		scene_instance.players_node = players_node
 		add_child(scene_instance, true)
+	get_tree().create_timer(wait).timeout.connect(spawnTimer_timeout)
 	# TODO: Put back check for powerup_time
 	if wait > 0.10:# and not player.powerup_time:
-		get_tree().create_timer(wait).timeout.connect(spawnTimer_timeout)
 		wait -= wait / 100

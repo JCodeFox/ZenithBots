@@ -19,6 +19,9 @@ var powerup_time: bool = false
 
 var enemies_destroyed: int = 0
 var time_alive: float = 0
+var is_spectating: bool = false
+var is_dead: bool = false
+var color: Color = Color.BLUE
 
 class LocationData:
 	var spawn_point: Vector3
@@ -32,8 +35,8 @@ class LocationData:
 		camera = cam
 
 @onready var locations: Array[LocationData] = [
-	LocationData.new(Vector3(0, 501, 0), 450, 0, get_node("../../LobbyCam")),
-	LocationData.new(Vector3(0, 1, 0), -5, 5, get_node("../../MainCam")),
+	LocationData.new(Vector3(0, 515, 0), 450, 0, get_node("../../Lobby/LobbyCam")),
+	LocationData.new(Vector3(0, 5, 0), -5, 5, get_node("../../PlayArea/MainCam")),
 ]
 
 var current_location: int = 0:
@@ -56,8 +59,15 @@ var current_location: int = 0:
 ####################
 # Common Overrides #
 ####################
+func _enter_tree():
+	set_multiplayer_authority(int(str(name)))
+	
+	if is_multiplayer_authority():
+		set_info(GlobalData.username, GlobalData.player_color)
 
 func _ready():
+	$Particles.emitting = false
+	get_node("../../ExplosionParticles").emitting = false
 	var master: Node = get_parent().get_parent()
 	clock = master.clock
 	health_bar = master.health_bar
@@ -72,15 +82,20 @@ func _physics_process(delta):
 		move_and_slide()
 		return
 	
-	if health<=0:
-		
-		current_location = 0
-		global_position = locations[current_location].spawn_point
-		if game_over_popup and not game_over_popup.visible:
-			game_over_popup.get_node("VBoxContainer/Time").text = "Time survived:\n" + str(int(time_alive)) + "s"
-			game_over_popup.get_node("VBoxContainer/Destroyed").text = "Robots destroyed:\n" + str(enemies_destroyed)
-			game_over_popup.visible = true
+	if is_spectating:
+		global_position = locations[0].spawn_point
 		return
+	
+	if health<=0:
+		is_spectating = true
+		is_dead = true
+		global_position = locations[0].spawn_point
+#		if game_over_popup and not game_over_popup.visible:
+#			game_over_popup.get_node("VBoxContainer/Time").text = "Time survived:\n" + str(int(time_alive)) + "s"
+#			game_over_popup.get_node("VBoxContainer/Destroyed").text = "Robots destroyed:\n" + str(enemies_destroyed)
+#			game_over_popup.visible = true
+		return
+
 	var move_dir = Vector3()
 	
 	if not is_on_floor():
@@ -122,19 +137,18 @@ func _physics_process(delta):
 		health -= locations[current_location].barrier_hurt
 
 func _process(delta):
-	if multiplayer.is_server():
-		if Input.is_action_just_pressed("start_server"):
-			rpc("begin_game")
 	if not is_multiplayer_authority():
+		$Particles.emitting = powerup_time
 		return
-	time_alive += delta
+	if not is_spectating:
+		time_alive += delta
 	update_clock()
 	update_health_bar()
 
 func _on_Timer_timeout():
 	$Timer.start()
 	powerup_time = !powerup_time
-	$Particles.emitting = powerup_time && health > 0
+	$Particles.emitting = powerup_time
 	if powerup_time:
 		get_node("LilBot/AnimationPlayer").speed_scale = 4.0
 		get_node("CollisionShape3D").shape.size = Vector3(4.0, 6.0, 4.0)
@@ -155,10 +169,11 @@ func update_clock():
 		var time_percent = $Timer.wait_time - $Timer.time_left / $Timer.wait_time
 		clock.get_node("Hand").rotation.y = (-2 * PI) * time_percent
 
-func set_color(color: Color) -> void:
+func set_color(new_color: Color) -> void:
+	color = new_color
 	var mat: StandardMaterial3D = $LilBot/RobotMasterPos/Body.get_surface_override_material(0)
 	mat = mat.duplicate()
-	mat.albedo_color = color
+	mat.albedo_color = new_color
 	$LilBot/RobotMasterPos/Body.set_surface_override_material(0, mat)
 
 ##################
@@ -166,22 +181,25 @@ func set_color(color: Color) -> void:
 ##################
 
 @rpc("call_local", "any_peer")
-func begin_game():
+func begin_game(is_spectator: bool = false):
 	current_location = 1
 	if not is_multiplayer_authority():
 		return
-	global_position = locations[current_location].spawn_point
+	if not is_spectator:
+		global_position = locations[current_location].spawn_point
+	time_alive = 0
+	is_spectating = is_spectator
+	is_dead = false
+	enemies_destroyed = 0
 
-@rpc("any_peer")
-func set_auth(id: int) -> void:
-	set_multiplayer_authority(id)
-	
-	if is_multiplayer_authority():
-		set_info(GlobalData.username, GlobalData.player_color)
-	
-	if not multiplayer.is_server():
+@rpc("call_local", "any_peer")
+func end_game():
+	current_location = 0
+	if not is_multiplayer_authority():
 		return
-	rpc("set_auth", id)
+	global_position = locations[current_location].spawn_point
+	is_spectating = false
+	health = 100
 
 @rpc
 func set_info(username: String, new_color: Color) -> void:
@@ -200,6 +218,12 @@ func refresh_info() -> void:
 	rpc_id(multiplayer.get_remote_sender_id(), "set_info", GlobalData.username, GlobalData.player_color)
 
 @rpc("any_peer")
+func refresh_auth():
+	if not multiplayer.is_server():
+		return
+	rpc_id(multiplayer.get_remote_sender_id(), "set_auth", get_multiplayer_authority())
+
+@rpc("any_peer")
 func get_hit(direction: Vector3) -> void:
 	velocity += direction * 75
 	health -= 5
@@ -208,3 +232,11 @@ func get_hit(direction: Vector3) -> void:
 	if multiplayer.get_remote_sender_id() == multiplayer.get_unique_id():
 		return
 	rpc("get_hit", direction)
+
+@rpc("any_peer", "call_local")
+func enemy_destroyed() -> void:
+	enemies_destroyed += 1
+	var particle_node: Object = get_node("../../ExplosionParticles")
+	particle_node.transform.origin = transform.origin
+	particle_node.emitting = true
+	particle_node.restart()

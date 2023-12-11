@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dhis4dtpi4rem" path="res://Sprites/Star.png" id="2"]
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://dfbk3aknjha83" path="res://Models/LilBot.tscn" id="4_ywy82"]
-[ext_resource type="Material" path="res://Models/PlayerAntennaCap.material" id="9"]
+[ext_resource type="Material" uid="uid://064ko04ie1ui" path="res://Models/PlayerAntennaCap.material" id="9"]
 [ext_resource type="Material" uid="uid://b725bkffgvsqq" path="res://Models/PlayerMetal.material" id="10"]
 
 [sub_resource type="BoxShape3D" id="18"]
@@ -39,6 +39,26 @@ properties/1/path = NodePath(".:velocity")
 properties/1/spawn = true
 properties/1/sync = true
 properties/1/watch = false
+properties/2/path = NodePath(".:is_spectating")
+properties/2/spawn = true
+properties/2/sync = true
+properties/2/watch = false
+properties/3/path = NodePath(".:enemies_destroyed")
+properties/3/spawn = true
+properties/3/sync = true
+properties/3/watch = false
+properties/4/path = NodePath(".:time_alive")
+properties/4/spawn = true
+properties/4/sync = true
+properties/4/watch = false
+properties/5/path = NodePath(".:is_dead")
+properties/5/spawn = true
+properties/5/sync = true
+properties/5/watch = false
+properties/6/path = NodePath(".:powerup_time")
+properties/6/spawn = true
+properties/6/sync = true
+properties/6/watch = false
 
 [node name="Player" type="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
@@ -61,7 +81,6 @@ texture = ExtResource("1")
 wait_time = 12.0
 
 [node name="Particles" type="GPUParticles3D" parent="."]
-emitting = false
 amount = 40
 lifetime = 2.0
 preprocess = 0.03
@@ -78,7 +97,7 @@ surface_material_override/0 = ExtResource("10")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_interval = 0.1
-delta_interval = 0.1
+delta_interval = 0.02
 replication_config = SubResource("SceneReplicationConfig_2olmq")
 
 [node name="Usertag" type="Label3D" parent="."]
