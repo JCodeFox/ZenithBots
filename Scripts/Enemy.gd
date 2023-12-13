@@ -3,12 +3,12 @@ extends CharacterBody3D
 const ACCEL: int = 4
 const DEACCEL: int = 8
 
+@export var WALK_SPEED: float = 9
+
 var players_node: Node
 
 @onready var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @onready var spawn: Vector3 = transform.origin
-
-@export var WALK_SPEED: float = 9
 
 @onready var offset: Vector3 = Vector3(randf_range(-20,20),0,randf_range(-20,20))
 

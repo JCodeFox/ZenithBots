@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://dwwnfd0me7r87"]
+[gd_scene load_steps=25 format=3 uid="uid://dwwnfd0me7r87"]
 
 [ext_resource type="Script" path="res://Scripts/network_manager.gd" id="1_k0ucf"]
 [ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="1_y2put"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dt4uuw0j4luc8" path="res://GameObjects/Player.tscn" id="3"]
 [ext_resource type="Script" path="res://Scripts/PauseHandler.gd" id="4"]
 [ext_resource type="PackedScene" uid="uid://ovm4eiqah4e2" path="res://GameObjects/StatsScreen.tscn" id="6_vcmdx"]
+[ext_resource type="AudioStream" uid="uid://byxy1xaiikj60" path="res://zenithbots_main_theme.wav" id="8_u7ghp"]
 
 [sub_resource type="ParticleProcessMaterial" id="10"]
 lifetime_randomness = 1.0
@@ -90,7 +91,7 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[node name="World" type="Node3D" node_paths=PackedStringArray("players_node", "enemies_node", "clock", "health_bar", "game_over_popup", "play_detector", "spectate_detector", "lobby_status", "stats_label", "stats_list_container")]
+[node name="World" type="Node3D" node_paths=PackedStringArray("players_node", "enemies_node", "clock", "health_bar", "game_over_popup", "play_detector", "spectate_detector", "lobby_status", "stats_label", "stats_list_container", "start_timer", "clock_timer")]
 script = ExtResource("1_k0ucf")
 stat_entry_scene = ExtResource("2_0f3pl")
 player_scene = ExtResource("3")
@@ -104,6 +105,8 @@ spectate_detector = NodePath("Lobby/SpectatePlatform/Detector")
 lobby_status = NodePath("Lobby/LobbyStatus")
 stats_label = NodePath("CanvasLayer/Stats")
 stats_list_container = NodePath("CanvasLayer/StatsListContainer")
+start_timer = NodePath("StartTimer")
+clock_timer = NodePath("ClockTimer")
 
 [node name="Enemies" type="Node3D" parent="."]
 script = ExtResource("2")
@@ -349,6 +352,15 @@ spawn_path = NodePath("../Players")
 
 [node name="StartTimer" type="Timer" parent="."]
 one_shot = true
+
+[node name="ClockTimer" type="Timer" parent="."]
+wait_time = 12.0
+
+[node name="MainMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_u7ghp")
+
+[node name="LobbyMusic" type="AudioStreamPlayer" parent="."]
+autoplay = true
 
 [connection signal="body_entered" from="Lobby/JoinPlatform/Detector" to="." method="on_player_ready"]
 [connection signal="body_exited" from="Lobby/JoinPlatform/Detector" to="." method="on_player_not_ready"]

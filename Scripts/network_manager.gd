@@ -14,9 +14,20 @@ extends Node
 @export var stats_label: Label
 @export var stats_list_container: Control
 
-@onready var start_timer: Timer = $StartTimer
+@export var start_timer: Timer
+@export var clock_timer: Timer
 
 var game_running: bool = false
+
+var stats_visible: bool = false:
+	set(value):
+		stats_visible = value
+		stats_list_container.get_node("StatsList/Header/HideButton").text = "v" if stats_visible else "^"
+		for child in stats_list_container.get_node("StatsList").get_children():
+			if child.name != "Header":
+				child.visible = stats_visible
+	get:
+		return stats_visible
 
 var player_stats: Dictionary = {}
 
@@ -24,12 +35,28 @@ func _ready() -> void:
 	if verify_existance(enemies_node):
 		enemies_node.players_node = verify_existance(players_node)
 	
-	multiplayer.connected_to_server.connect(self.connected_to_server)
-	multiplayer.server_disconnected.connect(self.disconnected_from_server)
-	multiplayer.connection_failed.connect(self.connection_failed)
+	multiplayer.connected_to_server.connect(func():
+		print("Connected to server.")
+	)
+	multiplayer.server_disconnected.connect(func():
+		print("Disconnected from server.")
+		$CanvasLayer/PauseHandler.menu()
+	)
+	multiplayer.connection_failed.connect(func():
+		print("Connection to server failed.")
+	)
 	multiplayer.peer_connected.connect(self.player_connected)
 	multiplayer.peer_disconnected.connect(self.player_disconnected)
+	
+	clock_timer.timeout.connect(func():
+		var player: Node3D = players_node.get_node_or_null(str(multiplayer.get_unique_id()))
+		if player:
+			player.rpc("set_zenith", false, true)
+	)
 	start_timer.timeout.connect(attempt_begin.bind(true))
+	stats_list_container.get_node("StatsList/Header/HideButton").pressed.connect(func():
+		stats_visible = not stats_visible
+	)
 	
 	GlobalData.username = GlobalData.username.lstrip(" \t").rstrip(" \t")
 	if GlobalData.username == "" and (not GlobalData.is_hosting or GlobalData.allow_other_players):
@@ -42,13 +69,20 @@ func _ready() -> void:
 			].pick_random()
 	
 	if GlobalData.is_hosting:
-		start_server()
+		start_server(true)
 		multiplayer.multiplayer_peer.refuse_new_connections = not GlobalData.allow_other_players
 	else:
 		start_client(GlobalData.server_ip)
 
 func _process(_delta):
-	if not start_timer.is_stopped():
+	var time_percent = clock_timer.wait_time - clock_timer.time_left / clock_timer.wait_time
+	clock.get_node("Hand").rotation.y = (-2 * PI) * time_percent
+	
+	for player in players_node.get_children():
+		var player_id: int = player.get_multiplayer_authority()
+		set_stats(player_id, player.get_node("Usertag").text, player.enemies_destroyed, player.time_alive, player.color, player.is_spectating and not player.is_dead)
+	
+	if not start_timer.is_stopped() and lobby_status.text != "Starting in %d..." % int(start_timer.time_left):
 		rpc("set_lobby_status", "Starting in %d..." % int(start_timer.time_left))
 	if not multiplayer.is_server():
 		return
@@ -57,11 +91,13 @@ func _process(_delta):
 		for player in players_node.get_children():
 			if not player.is_spectating:
 				game_over = false
-			rpc("set_stats", player.get_multiplayer_authority(), player.get_node("Usertag").text, player.enemies_destroyed, player.time_alive, player.color, player.is_spectating and not player.is_dead)
 		if game_over:
 			game_running = false
 			for player in players_node.get_children():
 				player.rpc("end_game")
+				rpc_id(player.get_multiplayer_authority(), "game_ended")
+			if multiplayer.is_server() and not players_node.has_node("1"):
+				game_ended()
 			enemies_node.stop()
 			attempt_begin()
 
@@ -69,20 +105,9 @@ func _process(_delta):
 func set_lobby_status(text: String):
 	lobby_status.text = text
 
-@rpc("any_peer", "call_local")
 func set_stats(id: int, username: String, destroys: int, time: int, color: Color, spectating: bool):
 	player_stats[id] = [id, username, destroys, time, color, spectating]
 	update_stats_list()
-#	var entry: Control = stats_list_container.get_node("StatsList").get_node_or_null(str(id))
-#	if not entry:
-#		entry = stat_entry_scene.instantiate()
-#		entry.name = str(id)
-#		stats_list_container.get_node("StatsList").add_child(entry)
-#		entry.get_node("Username").text = username
-#		entry.modulate = color
-#	entry.get_node("Destroys").text = str(destroys)
-#	entry.get_node("Time").text = str(time)
-#	entry.get_node("Score").text = str(time + destroys)
 
 func update_stats_list():
 	var player_stats_array: Array = player_stats.values()
@@ -98,6 +123,7 @@ func update_stats_list():
 			stats_list_container.get_node("StatsList").add_child(entry)
 			entry.get_node("Username").text = player_stats_array[i][1]
 			entry.modulate = player_stats_array[i][4]
+			entry.visible = stats_visible
 		if player_stats_array[i][5]:
 			entry.get_node("Destroys").text = "---"
 			entry.get_node("Time").text = "---"
@@ -136,16 +162,34 @@ func attempt_begin(is_final: bool = false) -> void:
 	else:
 		game_running = true
 		for player in players_node.get_children():
-			player.rpc("begin_game", player in spectate_detector.get_overlapping_bodies())
-			rpc("game_started")
+			var is_spectator: bool = player in spectate_detector.get_overlapping_bodies()
+			player.rpc("begin_game", is_spectator)
+			if multiplayer.is_server():
+				rpc_id(player.get_multiplayer_authority(), "game_started", is_spectator)
 		if verify_existance(enemies_node):
 			enemies_node.begin()
+		if multiplayer.is_server() and not players_node.has_node("1"):
+			game_started(false)
 
 @rpc("call_local", "any_peer")
-func game_started():
+func game_started(is_spectator: bool) -> void:
+	$LobbyMusic.stop()
+	$MainMusic.play()
+	clock_timer.start()
+	stats_visible = is_spectator
 	for child in stats_list_container.get_node("StatsList").get_children():
 		if child.name != "Header":
 			child.queue_free()
+
+@rpc("call_local", "any_peer")
+func game_ended() -> void:
+	$MainMusic.stop()
+	$LobbyMusic.play()
+	clock_timer.stop()
+	stats_visible = true
+	var player: Node3D = players_node.get_node_or_null(str(multiplayer.get_unique_id()))
+	if player:
+		player.rpc("set_zenith", false)
 
 func on_player_ready(_body: Node3D) -> void:
 	attempt_begin()
@@ -168,13 +212,14 @@ func verify_existance(obj: Object) -> Object:
 		return null
 	return obj
 
-func start_server() -> void:
+func start_server(is_playing: bool = false) -> void:
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
 	peer.create_server(1342)
 	multiplayer.set_multiplayer_peer(peer)
 	print("Server started")
 	
-	spawn_player(1)
+	if is_playing:
+		spawn_player(1)
 
 func start_client(ip: String) -> void:
 	var peer: ENetMultiplayerPeer = ENetMultiplayerPeer.new()
@@ -186,16 +231,6 @@ func start_client(ip: String) -> void:
 #############
 # Callbacks #
 #############
-func connected_to_server() -> void:
-	print("Connected to server.")
-
-func disconnected_from_server() -> void:
-	print("Disconnected from server.")
-	$CanvasLayer/PauseHandler.menu()
-
-func connection_failed() -> void:
-	print("Connection to server failed.")
-
 func player_connected(id: int) -> void:
 	# Cancel if not running on server.
 	if not multiplayer.is_server():

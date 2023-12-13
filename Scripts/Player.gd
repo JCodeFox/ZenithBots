@@ -9,19 +9,14 @@ const DEACCEL: int = 8
 @export var RUN_SPEED: float = 40.0
 @export var jump_force: float = 10.0
 
-@export var clock: Node
 @export var health_bar: ProgressBar
-@export var game_over_popup: Node
-
-var health: int = 100
 
 var powerup_time: bool = false
 
 var enemies_destroyed: int = 0
 var time_alive: float = 0
 var is_spectating: bool = false
-var is_dead: bool = false
-var color: Color = Color.BLUE
+var is_dead: bool = true
 
 class LocationData:
 	var spawn_point: Vector3
@@ -44,15 +39,26 @@ var current_location: int = 0:
 		current_location = value
 		if locations[current_location].camera:
 			locations[current_location].camera.make_current()
-		if value != 1:
-			powerup_time = true
-			_on_Timer_timeout()
-			$Timer.stop()
-		else:
-			powerup_time = true
-			_on_Timer_timeout()
 	get:
 		return current_location
+
+var health: int = 100:
+	set(value):
+		health = value
+		if health_bar and is_multiplayer_authority():
+			health_bar.value = health
+	get:
+		return health
+
+var color: Color = Color.BLUE:
+	set(value):
+		color = value
+		var mat: StandardMaterial3D = $LilBot/RobotMasterPos/Body.get_surface_override_material(0)
+		mat = mat.duplicate()
+		mat.albedo_color = color
+		$LilBot/RobotMasterPos/Body.set_surface_override_material(0, mat)
+	get:
+		return color
 
 # The point of this file is to allow the player to experience a sense of power through the control of a character on the digital screen
 
@@ -69,13 +75,17 @@ func _ready():
 	$Particles.emitting = false
 	get_node("../../ExplosionParticles").emitting = false
 	var master: Node = get_parent().get_parent()
-	clock = master.clock
 	health_bar = master.health_bar
-	game_over_popup = master.game_over_popup
 	global_position = locations[current_location].spawn_point
 	
 	if not is_multiplayer_authority() and not multiplayer.is_server():
 		refresh_info()
+
+func _process(delta):
+	if not is_multiplayer_authority():
+		return
+	if not is_spectating and not is_dead:
+		time_alive += delta
 
 func _physics_process(delta):
 	if not is_multiplayer_authority():
@@ -90,10 +100,6 @@ func _physics_process(delta):
 		is_spectating = true
 		is_dead = true
 		global_position = locations[0].spawn_point
-#		if game_over_popup and not game_over_popup.visible:
-#			game_over_popup.get_node("VBoxContainer/Time").text = "Time survived:\n" + str(int(time_alive)) + "s"
-#			game_over_popup.get_node("VBoxContainer/Destroyed").text = "Robots destroyed:\n" + str(enemies_destroyed)
-#			game_over_popup.visible = true
 		return
 
 	var move_dir = Vector3()
@@ -136,46 +142,6 @@ func _physics_process(delta):
 		transform.origin = locations[current_location].spawn_point
 		health -= locations[current_location].barrier_hurt
 
-func _process(delta):
-	if not is_multiplayer_authority():
-		$Particles.emitting = powerup_time
-		return
-	if not is_spectating:
-		time_alive += delta
-	update_clock()
-	update_health_bar()
-
-func _on_Timer_timeout():
-	$Timer.start()
-	powerup_time = !powerup_time
-	$Particles.emitting = powerup_time
-	if powerup_time:
-		get_node("LilBot/AnimationPlayer").speed_scale = 4.0
-		get_node("CollisionShape3D").shape.size = Vector3(4.0, 6.0, 4.0)
-	else:
-		get_node("LilBot/AnimationPlayer").speed_scale = 1.0
-		get_node("CollisionShape3D").shape.size = Vector3(2.0, 6.0, 2.0)
-
-####################
-# Helper functions #
-####################
-
-func update_health_bar():
-	if health_bar:
-		health_bar.value = health
-
-func update_clock():
-	if clock:
-		var time_percent = $Timer.wait_time - $Timer.time_left / $Timer.wait_time
-		clock.get_node("Hand").rotation.y = (-2 * PI) * time_percent
-
-func set_color(new_color: Color) -> void:
-	color = new_color
-	var mat: StandardMaterial3D = $LilBot/RobotMasterPos/Body.get_surface_override_material(0)
-	mat = mat.duplicate()
-	mat.albedo_color = new_color
-	$LilBot/RobotMasterPos/Body.set_surface_override_material(0, mat)
-
 ##################
 # Networky Stuff #
 ##################
@@ -204,7 +170,7 @@ func end_game():
 @rpc
 func set_info(username: String, new_color: Color) -> void:
 	$Usertag.text = username
-	set_color(new_color)
+	color = new_color
 	
 	if not is_multiplayer_authority():
 		return
@@ -222,6 +188,21 @@ func refresh_auth():
 	if not multiplayer.is_server():
 		return
 	rpc_id(multiplayer.get_remote_sender_id(), "set_auth", get_multiplayer_authority())
+
+
+@rpc("any_peer", "call_local")
+func set_zenith(value: bool = true, toggle: bool = false):
+	if toggle:
+		powerup_time = !powerup_time
+	else:
+		powerup_time = value
+	$Particles.emitting = powerup_time
+	if powerup_time:
+		get_node("LilBot/AnimationPlayer").speed_scale = 4.0
+		get_node("CollisionShape3D").shape.size = Vector3(4.0, 6.0, 4.0)
+	else:
+		get_node("LilBot/AnimationPlayer").speed_scale = 1.0
+		get_node("CollisionShape3D").shape.size = Vector3(2.0, 6.0, 2.0)
 
 @rpc("any_peer")
 func get_hit(direction: Vector3) -> void:

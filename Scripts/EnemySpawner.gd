@@ -23,8 +23,7 @@ func spawnTimer_timeout():
 	if not players_node:
 		push_warning("Players node not set!")
 		return
-	# TODO: Put back check for powerup_time
-	if get_child_count() < 101:# and not player.powerup_time:
+	if get_child_count() < 101:
 		var scene_instance = scene.instantiate()
 		scene_instance.set_name("enemy")
 		var pos_mult = Vector2(randf_range(-1.0, 1.0),randf_range(-1.0, 1.0))
@@ -34,6 +33,5 @@ func spawnTimer_timeout():
 		scene_instance.players_node = players_node
 		add_child(scene_instance, true)
 	get_tree().create_timer(wait).timeout.connect(spawnTimer_timeout)
-	# TODO: Put back check for powerup_time
-	if wait > 0.10:# and not player.powerup_time:
+	if wait > 0.10:
 		wait -= wait / 100

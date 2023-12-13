@@ -5,17 +5,9 @@ extends Node
 func _process(_delta):
 	if Input.is_action_just_pressed("Pause"):
 		pause()
-		
-	if Input.is_action_just_pressed("Restart"):
-		restart()
-		
-func pause():
-	#get_tree().paused = !get_tree().paused
-	pause_menu.visible = !pause_menu.visible
 
-func restart():
-	pass
-	#get_tree().change_scene_to_file("res://Scenes/World.tscn")
+func pause():
+	pause_menu.visible = !pause_menu.visible
 
 func menu():
 	get_tree().paused = true
