@@ -1,4 +1,4 @@
-extends Node
+extends Node3D
 
 @export var stat_entry_scene: PackedScene 
 @export var player_scene: PackedScene
@@ -67,15 +67,20 @@ func _ready() -> void:
 			"I forgor 💀", "🤖", "🦊", ":)", "<keyboard spam>",
 			"Doesn't type", "Me", "Who?", "That person", "._."
 			].pick_random()
-	
-	if GlobalData.is_hosting:
+	if "server" in OS.get_cmdline_args():
+		start_server(false)
+		multiplayer.multiplayer_peer.refuse_new_connections = false
+	elif GlobalData.is_hosting:
 		start_server(true)
 		multiplayer.multiplayer_peer.refuse_new_connections = not GlobalData.allow_other_players
 	else:
 		start_client(GlobalData.server_ip)
 
 func _process(_delta):
-	var time_percent = clock_timer.wait_time - clock_timer.time_left / clock_timer.wait_time
+	var time_amount = clock_timer.wait_time - clock_timer.time_left
+	var time_int = int(time_amount)
+	var time_fraction = time_amount - time_int
+	var time_percent = (time_int + time_fraction * time_fraction * time_fraction) / clock_timer.wait_time
 	clock.get_node("Hand").rotation.y = (-2 * PI) * time_percent
 	
 	for player in players_node.get_children():

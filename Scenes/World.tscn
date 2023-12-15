@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://dwwnfd0me7r87"]
+[gd_scene load_steps=27 format=3 uid="uid://dwwnfd0me7r87"]
 
 [ext_resource type="Script" path="res://Scripts/network_manager.gd" id="1_k0ucf"]
 [ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="1_y2put"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://btbdxl0p7ogv6" path="res://GameObjects/stats_entry.tscn" id="2_0f3pl"]
 [ext_resource type="PackedScene" uid="uid://dt4uuw0j4luc8" path="res://GameObjects/Player.tscn" id="3"]
 [ext_resource type="Script" path="res://Scripts/PauseHandler.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://cd2bri2xbdoyr" path="res://Sprites/z.svg" id="6_2c45p"]
 [ext_resource type="PackedScene" uid="uid://ovm4eiqah4e2" path="res://GameObjects/StatsScreen.tscn" id="6_vcmdx"]
 [ext_resource type="AudioStream" uid="uid://byxy1xaiikj60" path="res://zenithbots_main_theme.wav" id="8_u7ghp"]
 
@@ -42,6 +43,9 @@ size = Vector3(50, 1, 50)
 
 [sub_resource type="BoxMesh" id="BoxMesh_nlvo3"]
 size = Vector3(50, 1, 50)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_30ooc"]
+albedo_color = Color(0.937255, 0.870588, 0.6, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vk6t7"]
 size = Vector3(25, 1, 25)
@@ -92,6 +96,7 @@ corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [node name="World" type="Node3D" node_paths=PackedStringArray("players_node", "enemies_node", "clock", "health_bar", "game_over_popup", "play_detector", "spectate_detector", "lobby_status", "stats_label", "stats_list_container", "start_timer", "clock_timer")]
+editor_description = "Contains play area and lobby"
 script = ExtResource("1_k0ucf")
 stat_entry_scene = ExtResource("2_0f3pl")
 player_scene = ExtResource("3")
@@ -131,6 +136,7 @@ draw_pass_1 = SubResource("12")
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 25, 50)
 environment = SubResource("Environment_vldyc")
 current = true
+fov = 70.0
 far = 200.0
 
 [node name="OmniLight3D" type="OmniLight3D" parent="PlayArea"]
@@ -166,6 +172,14 @@ shape = SubResource("BoxShape3D_qq51h")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Lobby/LobbyGround"]
 mesh = SubResource("BoxMesh_nlvo3")
+surface_material_override/0 = SubResource("StandardMaterial3D_30ooc")
+
+[node name="Sprite3D" type="Sprite3D" parent="Lobby/LobbyGround"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51, 0)
+modulate = Color(0.333333, 0.298039, 0.25098, 1)
+pixel_size = 0.2
+axis = 1
+texture = ExtResource("6_2c45p")
 
 [node name="JoinPlatform" type="StaticBody3D" parent="Lobby"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.5, 500, 0)

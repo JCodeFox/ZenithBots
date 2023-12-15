@@ -1,13 +1,16 @@
-[gd_scene load_steps=7 format=3 uid="uid://she7pqw8wik8"]
+[gd_scene load_steps=8 format=3 uid="uid://she7pqw8wik8"]
 
+[ext_resource type="Texture2D" uid="uid://msm58756qnv6" path="res://Sprites/hand.svg" id="1_7ly4p"]
 [ext_resource type="Texture2D" uid="uid://p0ieudub5esn" path="res://Sprites/ClockFaceZ.png" id="1_l44og"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gf7v1"]
-albedo_color = Color(0, 0, 0, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_syc8q"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+albedo_texture = ExtResource("1_7ly4p")
 
-[sub_resource type="PlaneMesh" id="1"]
-material = SubResource("StandardMaterial3D_gf7v1")
-size = Vector2(0.05, 1)
+[sub_resource type="PlaneMesh" id="PlaneMesh_4ld0e"]
+material = SubResource("StandardMaterial3D_syc8q")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mra30"]
 albedo_color = Color(0.87451, 0.839216, 0.580392, 1)
@@ -33,8 +36,7 @@ transform = Transform3D(45, 0, 0, 0, 1, 0, 0, 0, 45, 0, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
 
 [node name="Hand" type="MeshInstance3D" parent="Hand"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4)
-mesh = SubResource("1")
+mesh = SubResource("PlaneMesh_4ld0e")
 
 [node name="ClockFace" type="StaticBody3D" parent="."]
 collision_layer = 3

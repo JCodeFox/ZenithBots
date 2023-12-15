@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dfbk3aknjha83" path="res://Models/LilBot.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="2_14epn"]
+[ext_resource type="Texture2D" uid="uid://cd2bri2xbdoyr" path="res://Sprites/z.svg" id="6_qrg6f"]
 [ext_resource type="Material" uid="uid://064ko04ie1ui" path="res://Models/PlayerAntennaCap.material" id="8"]
 [ext_resource type="Material" uid="uid://b725bkffgvsqq" path="res://Models/PlayerMetal.material" id="9"]
 [ext_resource type="Script" path="res://Scripts/Menu.gd" id="10"]
@@ -15,50 +16,43 @@ size = Vector2(200, 200)
 
 [sub_resource type="Environment" id="17"]
 background_mode = 1
-background_color = Color(0.831373, 0.792157, 0.545098, 1)
 ambient_light_color = Color(1, 1, 1, 1)
 
-[sub_resource type="StyleBoxFlat" id="18"]
-bg_color = Color(0.541176, 0.541176, 0.541176, 0.521569)
-border_width_left = 10
-border_width_top = 10
-border_width_right = 10
-border_width_bottom = 10
-border_color = Color(0.541176, 0.541176, 0.541176, 0)
-border_blend = true
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
-[node name="Menu" type="Node3D"]
+[node name="Menu" type="Node3D" node_paths=PackedStringArray("clock", "clock_timer")]
 process_mode = 3
 script = ExtResource("10")
+clock = NodePath("Clock")
+clock_timer = NodePath("LilBot4/Timer")
 
 [node name="Wall" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 5.012, 0, -10.0195)
+visible = false
 mesh = SubResource("PlaneMesh_cqugi")
 
 [node name="Clock" parent="." instance=ExtResource("2_14epn")]
 transform = Transform3D(10, 0, 0, 0, -9.70393e-09, -10, 0, 0.222, -4.37114e-07, 5.012, 0, -10)
 
 [node name="LilBot" parent="." instance=ExtResource("2")]
-transform = Transform3D(-0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, -0.5, 6.1099, -2, -6.183)
+transform = Transform3D(0.295303, 0.40348, 0.866025, 0.80696, -0.590606, 0, 0.511479, 0.698848, -0.5, 6.06, 0.11, -6.863)
 
 [node name="LilBot2" parent="." instance=ExtResource("2")]
-transform = Transform3D(-0.984808, 0, -0.173648, 0, 1, 0, 0.173648, 0, -0.984808, 0.055, -2, -8.004)
+transform = Transform3D(-0.984808, 0.127822, -0.117538, 0, 0.676876, 0.736097, 0.173648, 0.724914, -0.666593, 0.055, 4, -8.004)
 
 [node name="LilBot3" parent="." instance=ExtResource("2")]
-transform = Transform3D(-0.766044, 0, -0.642788, 0, 1, 0, 0.642788, 0, -0.766044, -4.782, -2, -8.004)
+transform = Transform3D(-0.633938, -0.0640106, -0.770731, 0.303327, 0.896142, -0.323917, 0.711418, -0.439127, -0.548682, -5.217, -3.515, -8.004)
 
 [node name="LilBot4" parent="." instance=ExtResource("2")]
-transform = Transform3D(-0.766045, 0, 0.642787, 0, 1, 0, -0.642787, 0, -0.766045, 2.0899, -2, -4.204)
+transform = Transform3D(-0.758063, -0.0783438, 0.647458, -0.271916, 0.940323, -0.204586, -0.592791, -0.331143, -0.734127, 2.0899, -2, -4.204)
 
 [node name="AnttenaSphere" parent="LilBot4/RobotMasterPos/Antenna" index="0"]
 surface_material_override/0 = ExtResource("8")
 
 [node name="Body" parent="LilBot4/RobotMasterPos" index="3"]
 surface_material_override/0 = ExtResource("9")
+
+[node name="Timer" type="Timer" parent="LilBot4"]
+wait_time = 12.0
+autostart = true
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.175, 0, 2)
@@ -71,66 +65,74 @@ omni_range = 15.6925
 
 [node name="Main" type="Control" parent="."]
 layout_mode = 3
-anchors_preset = 0
-offset_left = 110.0
-offset_top = 100.0
-offset_right = 150.0
-offset_bottom = 140.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Label" type="Label" parent="Main"]
+layout_mode = 1
+offset_left = 19.0
+offset_top = 23.0
+offset_right = 296.0
+offset_bottom = 95.0
+theme_override_colors/font_color = Color(0.0745098, 0.0745098, 0.968627, 1)
+theme_override_font_sizes/font_size = 50
+text = "    enith Bots
+"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="Main/Label"]
+modulate = Color(0.0745098, 0.0745098, 0.968627, 1)
 layout_mode = 0
-offset_left = -90.0
-offset_top = -80.0
-offset_right = 400.0
-offset_bottom = -35.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-theme_override_font_sizes/font_size = 30
-text = "Zenith Bots by Jcodefox (foxtatoe)"
+offset_left = 14.0
+offset_top = 17.0
+offset_right = 54.0
+offset_bottom = 57.0
+texture = ExtResource("6_qrg6f")
+expand_mode = 1
 
 [node name="Play" type="Button" parent="Main"]
 layout_mode = 0
-offset_right = 150.0
-offset_bottom = 50.0
+offset_left = 93.9409
+offset_top = 95.0
+offset_right = 243.941
+offset_bottom = 145.0
+rotation = 0.261799
 text = "Play Classic"
 
 [node name="PlayMultiplayer" type="Button" parent="Main"]
 layout_mode = 0
-offset_left = 166.0
-offset_right = 316.0
-offset_bottom = 50.0
+offset_left = 93.9409
+offset_top = 157.0
+offset_right = 243.941
+offset_bottom = 207.0
+rotation = 0.261799
 text = "Play Multiplayer"
 
 [node name="Quit" type="Button" parent="Main"]
 layout_mode = 0
-offset_top = 63.327
-offset_right = 150.0
-offset_bottom = 113.327
+offset_left = 93.9409
+offset_top = 221.0
+offset_right = 243.941
+offset_bottom = 271.0
+rotation = 0.261799
 text = "Quit"
 
-[node name="Panel" type="Panel" parent="Main"]
+[node name="Name" type="Label" parent="Main"]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = -101.0
-offset_top = 287.0
-offset_right = 553.0
-offset_bottom = 487.0
+offset_left = 19.0
+offset_top = -47.0
+offset_right = 230.0
+offset_bottom = -16.0
 grow_vertical = 0
-theme_override_styles/panel = SubResource("18")
-
-[node name="Instructions" type="Label" parent="Main/Panel"]
-layout_mode = 0
-offset_left = 5.0
-offset_top = 5.0
-theme_override_colors/font_color = Color(0, 0, 0, 1)
-text = "Zenith: The time at which something is most powerful.
-
-Survive as long as possible by avoiding the gray robots.
-You can destroy the robots and move faster during your Zenith.
-The Zenith is indicated by a blue background and star particles around the player.
-
-(WASD to move)"
+theme_override_colors/font_color = Color(0.937255, 0.870588, 0.6, 1)
+theme_override_font_sizes/font_size = 20
+text = "by Jcodefox (foxtatoe)"
 
 [node name="Multiplayer" type="Control" parent="."]
 visible = false
@@ -141,11 +143,33 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
+[node name="Label2" type="Label" parent="Multiplayer"]
+layout_mode = 1
+offset_left = 19.0
+offset_top = 23.0
+offset_right = 319.0
+offset_bottom = 95.0
+theme_override_colors/font_color = Color(0.0745098, 0.0745098, 0.968627, 1)
+theme_override_font_sizes/font_size = 50
+text = "    enith Bots
+"
+horizontal_alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="Multiplayer/Label2"]
+modulate = Color(0.0745098, 0.0745098, 0.968627, 1)
+layout_mode = 0
+offset_left = 14.0
+offset_top = 17.0
+offset_right = 54.0
+offset_bottom = 57.0
+texture = ExtResource("6_qrg6f")
+expand_mode = 1
+
 [node name="VBoxContainer" type="VBoxContainer" parent="Multiplayer"]
 layout_mode = 0
-offset_left = 62.0
+offset_left = 51.0
 offset_top = 90.0
-offset_right = 312.0
+offset_right = 301.0
 offset_bottom = 227.0
 
 [node name="IP" type="LineEdit" parent="Multiplayer/VBoxContainer"]
