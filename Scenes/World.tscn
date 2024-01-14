@@ -1,0 +1,428 @@
+[gd_scene load_steps=31 format=3 uid="uid://dwwnfd0me7r87"]
+
+[ext_resource type="Script" path="res://Scripts/network_manager.gd" id="1_k0ucf"]
+[ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="1_y2put"]
+[ext_resource type="Script" path="res://Scripts/EnemySpawner.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://btbdxl0p7ogv6" path="res://GameObjects/stats_entry.tscn" id="2_0f3pl"]
+[ext_resource type="PackedScene" uid="uid://dt4uuw0j4luc8" path="res://GameObjects/Player.tscn" id="3"]
+[ext_resource type="Script" path="res://Scripts/PauseHandler.gd" id="4"]
+[ext_resource type="Texture2D" uid="uid://cd2bri2xbdoyr" path="res://Sprites/z.svg" id="6_2c45p"]
+[ext_resource type="PackedScene" uid="uid://ovm4eiqah4e2" path="res://GameObjects/StatsScreen.tscn" id="6_vcmdx"]
+[ext_resource type="AudioStream" uid="uid://byxy1xaiikj60" path="res://zenithbots_main_theme.wav" id="8_u7ghp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_twbnw"]
+vertex_color_use_as_albedo = true
+vertex_color_is_srgb = true
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mngmu"]
+vertex_color_use_as_albedo = true
+vertex_color_is_srgb = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_aqy0q"]
+material = SubResource("StandardMaterial3D_mngmu")
+radial_segments = 8
+rings = 4
+
+[sub_resource type="Curve" id="Curve_focm6"]
+min_value = -1.0
+_data = [Vector2(0, 1), 0.0, -2.0, 0, 1, Vector2(1, -1), -2.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_jp6tj"]
+min_value = -66.43
+max_value = 39.72
+_data = [Vector2(0, -66.43), 0.0, 106.15, 0, 1, Vector2(1, 39.72), 106.15, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_5qvgl"]
+min_value = -200.0
+max_value = 200.0
+_data = [Vector2(0, -200), 0.0, 400.0, 0, 1, Vector2(1, 200), 400.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_waqig"]
+min_value = 0.5
+max_value = 7.0
+_data = [Vector2(0.00446428, 7), 0.0, -11.9804, 0, 0, Vector2(0.995536, 0.69853), -0.815689, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Environment" id="Environment_vldyc"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.368627, 0.368627, 0.368627, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_qq51h"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="BoxMesh" id="BoxMesh_nlvo3"]
+size = Vector3(50, 1, 50)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_30ooc"]
+albedo_color = Color(0.937255, 0.870588, 0.6, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vk6t7"]
+size = Vector3(25, 1, 25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_554om"]
+albedo_color = Color(0, 1, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_s4tg8"]
+material = SubResource("StandardMaterial3D_554om")
+size = Vector3(25, 1, 25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jouy0"]
+size = Vector3(25, 25, 25)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tyrc3"]
+size = Vector3(25, 1, 25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2eug5"]
+albedo_color = Color(0.247059, 0.533333, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ovrdi"]
+material = SubResource("StandardMaterial3D_2eug5")
+size = Vector3(25, 1, 25)
+
+[sub_resource type="StyleBoxFlat" id="13"]
+bg_color = Color(0, 0, 0, 0.501961)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yk7x0"]
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pch6w"]
+bg_color = Color(1, 0, 0, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="World" type="Node3D" node_paths=PackedStringArray("players_node", "enemies_node", "clock", "health_bar", "game_over_popup", "play_detector", "spectate_detector", "lobby_status", "stats_label", "stats_list_container", "start_timer", "clock_timer")]
+editor_description = "Contains play area and lobby"
+script = ExtResource("1_k0ucf")
+stat_entry_scene = ExtResource("2_0f3pl")
+player_scene = ExtResource("3")
+players_node = NodePath("Players")
+enemies_node = NodePath("Enemies")
+clock = NodePath("PlayArea/Clock")
+health_bar = NodePath("CanvasLayer/HealthBar")
+game_over_popup = NodePath("CanvasLayer/GameOver")
+play_detector = NodePath("Lobby/JoinPlatform/Detector")
+spectate_detector = NodePath("Lobby/SpectatePlatform/Detector")
+lobby_status = NodePath("Lobby/LobbyStatus")
+stats_label = NodePath("CanvasLayer/Stats")
+stats_list_container = NodePath("CanvasLayer/StatsListContainer")
+start_timer = NodePath("StartTimer")
+clock_timer = NodePath("ClockTimer")
+
+[node name="Enemies" type="Node3D" parent="."]
+script = ExtResource("2")
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="ExplosionParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.56345, 0)
+material_override = SubResource("StandardMaterial3D_twbnw")
+emitting = false
+amount = 20
+lifetime = 0.1
+one_shot = true
+speed_scale = 0.3
+explosiveness = 1.0
+randomness = 1.0
+lifetime_randomness = 0.24
+local_coords = true
+mesh = SubResource("SphereMesh_aqy0q")
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
+emission_colors = PackedColorArray(0.733333, 0, 0, 1, 0.784314, 0.698039, 0, 1, 0.819608, 0.317647, 0.266667, 1, 0.8, 0.529412, 0.054902, 1, 0.321569, 0.321569, 0.321569, 1)
+direction = Vector3(0, 1, 0)
+spread = 56.15
+initial_velocity_min = 0.25
+initial_velocity_max = 100.0
+angular_velocity_min = -24.61
+angular_velocity_max = 43.08
+angular_velocity_curve = SubResource("Curve_focm6")
+linear_accel_min = -1.0
+linear_accel_max = 1.0
+linear_accel_curve = SubResource("Curve_jp6tj")
+radial_accel_min = -1.0
+radial_accel_max = 1.0
+radial_accel_curve = SubResource("Curve_5qvgl")
+scale_amount_min = 0.0
+scale_amount_curve = SubResource("Curve_waqig")
+anim_speed_min = 11.49
+anim_speed_max = 11.49
+
+[node name="PlayArea" type="Node3D" parent="."]
+
+[node name="Clock" parent="PlayArea" instance=ExtResource("1_y2put")]
+
+[node name="MainCam" type="Camera3D" parent="PlayArea"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 25, 50)
+environment = SubResource("Environment_vldyc")
+current = true
+fov = 70.0
+far = 200.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="PlayArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25.0486, 0)
+light_energy = 10.0
+omni_range = 100.344
+
+[node name="Lobby" type="Node3D" parent="."]
+
+[node name="LobbyStatus" type="Label3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 515, 0)
+billboard = 1
+text = "Enter the play or spectate zones
+Waiting on 0 players"
+font_size = 480
+
+[node name="LobbyCam" type="Camera3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 535, 50)
+environment = SubResource("Environment_vldyc")
+current = true
+far = 200.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 525.049, 0)
+light_energy = 10.0
+omni_range = 100.344
+
+[node name="LobbyGround" type="StaticBody3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 500, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lobby/LobbyGround"]
+shape = SubResource("BoxShape3D_qq51h")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Lobby/LobbyGround"]
+mesh = SubResource("BoxMesh_nlvo3")
+surface_material_override/0 = SubResource("StandardMaterial3D_30ooc")
+
+[node name="Sprite3D" type="Sprite3D" parent="Lobby/LobbyGround"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.51, 0)
+modulate = Color(0.333333, 0.298039, 0.25098, 1)
+pixel_size = 0.2
+axis = 1
+texture = ExtResource("6_2c45p")
+
+[node name="JoinPlatform" type="StaticBody3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.5, 500, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lobby/JoinPlatform"]
+shape = SubResource("BoxShape3D_vk6t7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Lobby/JoinPlatform"]
+mesh = SubResource("BoxMesh_s4tg8")
+
+[node name="Label3D" type="Label3D" parent="Lobby/JoinPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+billboard = 1
+text = "Play"
+font_size = 640
+
+[node name="Detector" type="Area3D" parent="Lobby/JoinPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lobby/JoinPlatform/Detector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11, 0)
+shape = SubResource("BoxShape3D_jouy0")
+
+[node name="SpectatePlatform" type="StaticBody3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.5, 500, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lobby/SpectatePlatform"]
+shape = SubResource("BoxShape3D_tyrc3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Lobby/SpectatePlatform"]
+mesh = SubResource("BoxMesh_ovrdi")
+
+[node name="Label3D" type="Label3D" parent="Lobby/SpectatePlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+billboard = 1
+text = "Spectate"
+font_size = 640
+
+[node name="Detector" type="Area3D" parent="Lobby/SpectatePlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lobby/SpectatePlatform/Detector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11, 0)
+shape = SubResource("BoxShape3D_jouy0")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="GameOver" type="Panel" parent="CanvasLayer"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -150.0
+offset_right = 150.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOver"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -104.0
+offset_right = 100.0
+offset_bottom = 104.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GameOver" type="Label" parent="CanvasLayer/GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Game Over"
+
+[node name="Time" type="Label" parent="CanvasLayer/GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Time survived:
+0s"
+
+[node name="Destroyed" type="Label" parent="CanvasLayer/GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Robots destroyed:
+0"
+
+[node name="Restart" type="Button" parent="CanvasLayer/GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Restart"
+
+[node name="Quit" type="Button" parent="CanvasLayer/GameOver/VBoxContainer"]
+layout_mode = 2
+text = "Quit to menu"
+
+[node name="PauseMenu" type="Panel" parent="CanvasLayer"]
+process_mode = 3
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("13")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PauseMenu"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -48.0
+offset_right = 48.0
+offset_bottom = 48.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Paused" type="Label" parent="CanvasLayer/PauseMenu/VBoxContainer"]
+layout_mode = 2
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="Resume" type="Button" parent="CanvasLayer/PauseMenu/VBoxContainer"]
+layout_mode = 2
+text = "Resume"
+
+[node name="Menu" type="Button" parent="CanvasLayer/PauseMenu/VBoxContainer"]
+layout_mode = 2
+text = "Main Menu"
+
+[node name="HealthBar" type="ProgressBar" parent="CanvasLayer"]
+offset_left = 1.0
+offset_top = 19.0
+offset_right = 181.0
+offset_bottom = 51.0
+theme_override_styles/background = SubResource("StyleBoxFlat_yk7x0")
+theme_override_styles/fill = SubResource("StyleBoxFlat_pch6w")
+step = 1.0
+value = 100.0
+
+[node name="Label" type="Label" parent="CanvasLayer"]
+offset_left = 1.0
+offset_top = 19.0
+offset_right = 69.0
+offset_bottom = 51.0
+text = "Health:"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PauseHandler" type="Node" parent="CanvasLayer"]
+process_mode = 3
+script = ExtResource("4")
+
+[node name="StatsListContainer" parent="CanvasLayer" instance=ExtResource("6_vcmdx")]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -46.0
+offset_bottom = 0.0
+grow_vertical = 0
+
+[node name="Stats" type="Label" parent="CanvasLayer"]
+visible = false
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -23.0
+offset_right = 40.0
+grow_vertical = 0
+
+[node name="EnemySpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://GameObjects/Enemy.tscn")
+spawn_path = NodePath("../Enemies")
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://GameObjects/Player.tscn")
+spawn_path = NodePath("../Players")
+
+[node name="StartTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="ClockTimer" type="Timer" parent="."]
+wait_time = 12.0
+
+[node name="MainMusic" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_u7ghp")
+
+[node name="LobbyMusic" type="AudioStreamPlayer" parent="."]
+autoplay = true
+
+[connection signal="body_entered" from="Lobby/JoinPlatform/Detector" to="." method="on_player_ready"]
+[connection signal="body_exited" from="Lobby/JoinPlatform/Detector" to="." method="on_player_not_ready"]
+[connection signal="body_entered" from="Lobby/SpectatePlatform/Detector" to="." method="on_player_ready"]
+[connection signal="body_exited" from="Lobby/SpectatePlatform/Detector" to="." method="on_player_not_ready"]
+[connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Restart" to="CanvasLayer/PauseHandler" method="restart"]
+[connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Quit" to="CanvasLayer/PauseHandler" method="menu"]
+[connection signal="pressed" from="CanvasLayer/PauseMenu/VBoxContainer/Resume" to="CanvasLayer/PauseHandler" method="pause"]
+[connection signal="pressed" from="CanvasLayer/PauseMenu/VBoxContainer/Menu" to="CanvasLayer/PauseHandler" method="menu"]

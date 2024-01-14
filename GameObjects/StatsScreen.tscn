@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3 uid="uid://ovm4eiqah4e2"]
+
+[ext_resource type="PackedScene" uid="uid://btbdxl0p7ogv6" path="res://GameObjects/stats_entry.tscn" id="1_5drdu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wi1oc"]
+bg_color = Color(0.0509804, 0.0509804, 0.0509804, 0.862745)
+corner_radius_top_right = 15
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_48nu4"]
+bg_color = Color(0.0509804, 0.0509804, 0.0509804, 0.862745)
+corner_radius_top_right = 15
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_j830w"]
+bg_color = Color(0.227451, 0.227451, 0.227451, 0.862745)
+corner_radius_top_right = 15
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_w8qjm"]
+bg_color = Color(0, 0, 0, 0.862745)
+corner_radius_top_right = 15
+
+[node name="StatsListContainer" type="PanelContainer"]
+offset_right = 702.0
+offset_bottom = 46.0
+size_flags_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_wi1oc")
+
+[node name="StatsList" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_constants/separation = 2
+alignment = 1
+
+[node name="Header" parent="StatsList" instance=ExtResource("1_5drdu")]
+layout_mode = 2
+
+[node name="TextureRect" parent="StatsList/Header" index="0"]
+texture = null
+
+[node name="HideButton" type="Button" parent="StatsList/Header"]
+custom_minimum_size = Vector2(15, 44)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_48nu4")
+theme_override_styles/hover = SubResource("StyleBoxFlat_j830w")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_w8qjm")
+theme_override_styles/focus = SubResource("StyleBoxFlat_48nu4")
+text = "^"
+
+[editable path="StatsList/Header"]

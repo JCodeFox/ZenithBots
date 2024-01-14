@@ -1,0 +1,17 @@
+[gd_resource type="AudioBusLayout" load_steps=2 format=3 uid="uid://mhbr7ahy2ihk"]
+
+[sub_resource type="AudioEffectChorus" id="AudioEffectChorus_f5uex"]
+resource_name = "Chorus"
+voice_count = 3
+dry = 0.67
+wet = 0.61
+voice/3/delay_ms = 12.0
+voice/3/rate_hz = 1.0
+voice/3/depth_ms = 0.0
+voice/3/level_db = 0.0
+voice/3/cutoff_hz = 16000.0
+voice/3/pan = 0.0
+
+[resource]
+bus/0/effect/0/effect = SubResource("AudioEffectChorus_f5uex")
+bus/0/effect/0/enabled = true

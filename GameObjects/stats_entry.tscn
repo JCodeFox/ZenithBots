@@ -1,0 +1,36 @@
+[gd_scene load_steps=2 format=3 uid="uid://btbdxl0p7ogv6"]
+
+[ext_resource type="Texture2D" uid="uid://85s4gh1utu6" path="res://Sprites/pfp.svg" id="1_0fmn3"]
+
+[node name="Entry" type="HBoxContainer"]
+
+[node name="TextureRect" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(46, 46)
+layout_mode = 2
+texture = ExtResource("1_0fmn3")
+expand_mode = 1
+
+[node name="Username" type="Label" parent="."]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Username"
+horizontal_alignment = 1
+clip_text = true
+
+[node name="Destroys" type="Label" parent="."]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Enemies Destroyed"
+horizontal_alignment = 1
+
+[node name="Time" type="Label" parent="."]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Time Alive"
+horizontal_alignment = 1
+
+[node name="Score" type="Label" parent="."]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+text = "Total Score"
+horizontal_alignment = 1

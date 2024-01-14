@@ -1,0 +1,79 @@
+[gd_scene load_steps=9 format=3 uid="uid://n2sglso8hyfj"]
+
+[ext_resource type="Script" path="res://GameObjects/Explosion.gd" id="1_8wgv0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3qprx"]
+vertex_color_use_as_albedo = true
+vertex_color_is_srgb = true
+billboard_mode = 3
+billboard_keep_scale = true
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fmpj7"]
+vertex_color_use_as_albedo = true
+vertex_color_is_srgb = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_cd3s7"]
+material = SubResource("StandardMaterial3D_fmpj7")
+radial_segments = 8
+rings = 4
+
+[sub_resource type="Curve" id="Curve_gq5fa"]
+min_value = -1.0
+_data = [Vector2(0, 1), 0.0, -2.0, 0, 1, Vector2(1, -1), -2.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_is6av"]
+min_value = -66.43
+max_value = 39.72
+_data = [Vector2(0, -66.43), 0.0, 106.15, 0, 1, Vector2(1, 39.72), 106.15, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_cwj5x"]
+min_value = -200.0
+max_value = 200.0
+_data = [Vector2(0, -200), 0.0, 400.0, 0, 1, Vector2(1, 200), 400.0, 0.0, 1, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_s3l38"]
+min_value = 0.5
+max_value = 7.0
+_data = [Vector2(0.00446428, 7), 0.0, -11.9804, 0, 0, Vector2(0.995536, 0.69853), -0.815689, 0.0, 0, 0]
+point_count = 2
+
+[node name="Explosion" type="Node3D"]
+
+[node name="CPUParticles3D" type="CPUParticles3D" parent="."]
+material_override = SubResource("StandardMaterial3D_3qprx")
+emitting = false
+amount = 20
+lifetime = 0.1
+one_shot = true
+explosiveness = 1.0
+randomness = 1.0
+lifetime_randomness = 0.24
+local_coords = true
+mesh = SubResource("SphereMesh_cd3s7")
+emission_shape = 3
+emission_box_extents = Vector3(1, 1, 1)
+emission_colors = PackedColorArray(0.733333, 0, 0, 1, 0.784314, 0.698039, 0, 1, 0.819608, 0.317647, 0.266667, 1, 0.8, 0.529412, 0.054902, 1, 0.321569, 0.321569, 0.321569, 1)
+direction = Vector3(0, 1, 0)
+spread = 56.15
+initial_velocity_min = 0.25
+initial_velocity_max = 100.0
+angular_velocity_min = -24.61
+angular_velocity_max = 43.08
+angular_velocity_curve = SubResource("Curve_gq5fa")
+linear_accel_min = -1.0
+linear_accel_max = 1.0
+linear_accel_curve = SubResource("Curve_is6av")
+radial_accel_min = -1.0
+radial_accel_max = 1.0
+radial_accel_curve = SubResource("Curve_cwj5x")
+scale_amount_min = 0.0
+scale_amount_curve = SubResource("Curve_s3l38")
+anim_speed_min = 11.49
+anim_speed_max = 11.49
+script = ExtResource("1_8wgv0")
