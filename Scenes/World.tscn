@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://dwwnfd0me7r87"]
+[gd_scene load_steps=27 format=3 uid="uid://dwwnfd0me7r87"]
 
 [ext_resource type="Script" path="res://Scripts/network_manager.gd" id="1_k0ucf"]
 [ext_resource type="PackedScene" uid="uid://she7pqw8wik8" path="res://GameObjects/clock.tscn" id="1_y2put"]
@@ -10,46 +10,28 @@
 [ext_resource type="PackedScene" uid="uid://ovm4eiqah4e2" path="res://GameObjects/StatsScreen.tscn" id="6_vcmdx"]
 [ext_resource type="AudioStream" uid="uid://byxy1xaiikj60" path="res://zenithbots_main_theme.wav" id="8_u7ghp"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_twbnw"]
-vertex_color_use_as_albedo = true
-vertex_color_is_srgb = true
-billboard_mode = 3
-billboard_keep_scale = true
-particles_anim_h_frames = 1
-particles_anim_v_frames = 1
-particles_anim_loop = false
+[sub_resource type="ParticleProcessMaterial" id="10"]
+lifetime_randomness = 1.0
+emission_shape = 1
+emission_sphere_radius = 1.0
+direction = Vector3(1, 1, 1)
+spread = 90.0
+initial_velocity_min = -30.0
+initial_velocity_max = 30.0
+angular_velocity_min = -30.0
+angular_velocity_max = 30.0
+angle_max = 360.0
+scale_min = 0.1
+scale_max = 2.0
+collision_use_scale = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mngmu"]
-vertex_color_use_as_albedo = true
-vertex_color_is_srgb = true
+[sub_resource type="StandardMaterial3D" id="11"]
+shading_mode = 0
+albedo_color = Color(0.498039, 0.498039, 0.498039, 1)
 
-[sub_resource type="SphereMesh" id="SphereMesh_aqy0q"]
-material = SubResource("StandardMaterial3D_mngmu")
-radial_segments = 8
-rings = 4
-
-[sub_resource type="Curve" id="Curve_focm6"]
-min_value = -1.0
-_data = [Vector2(0, 1), 0.0, -2.0, 0, 1, Vector2(1, -1), -2.0, 0.0, 1, 0]
-point_count = 2
-
-[sub_resource type="Curve" id="Curve_jp6tj"]
-min_value = -66.43
-max_value = 39.72
-_data = [Vector2(0, -66.43), 0.0, 106.15, 0, 1, Vector2(1, 39.72), 106.15, 0.0, 1, 0]
-point_count = 2
-
-[sub_resource type="Curve" id="Curve_5qvgl"]
-min_value = -200.0
-max_value = 200.0
-_data = [Vector2(0, -200), 0.0, 400.0, 0, 1, Vector2(1, 200), 400.0, 0.0, 1, 0]
-point_count = 2
-
-[sub_resource type="Curve" id="Curve_waqig"]
-min_value = 0.5
-max_value = 7.0
-_data = [Vector2(0.00446428, 7), 0.0, -11.9804, 0, 0, Vector2(0.995536, 0.69853), -0.815689, 0.0, 0, 0]
-point_count = 2
+[sub_resource type="PrismMesh" id="12"]
+material = SubResource("11")
+size = Vector3(0.5, 0.5, 0.5)
 
 [sub_resource type="Environment" id="Environment_vldyc"]
 background_mode = 1
@@ -136,39 +118,15 @@ script = ExtResource("2")
 
 [node name="Players" type="Node3D" parent="."]
 
-[node name="ExplosionParticles" type="CPUParticles3D" parent="."]
+[node name="ExplosionParticles" type="GPUParticles3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.56345, 0)
-material_override = SubResource("StandardMaterial3D_twbnw")
 emitting = false
-amount = 20
-lifetime = 0.1
+amount = 16
+lifetime = 5.0
 one_shot = true
-speed_scale = 0.3
 explosiveness = 1.0
-randomness = 1.0
-lifetime_randomness = 0.24
-local_coords = true
-mesh = SubResource("SphereMesh_aqy0q")
-emission_shape = 3
-emission_box_extents = Vector3(1, 1, 1)
-emission_colors = PackedColorArray(0.733333, 0, 0, 1, 0.784314, 0.698039, 0, 1, 0.819608, 0.317647, 0.266667, 1, 0.8, 0.529412, 0.054902, 1, 0.321569, 0.321569, 0.321569, 1)
-direction = Vector3(0, 1, 0)
-spread = 56.15
-initial_velocity_min = 0.25
-initial_velocity_max = 100.0
-angular_velocity_min = -24.61
-angular_velocity_max = 43.08
-angular_velocity_curve = SubResource("Curve_focm6")
-linear_accel_min = -1.0
-linear_accel_max = 1.0
-linear_accel_curve = SubResource("Curve_jp6tj")
-radial_accel_min = -1.0
-radial_accel_max = 1.0
-radial_accel_curve = SubResource("Curve_5qvgl")
-scale_amount_min = 0.0
-scale_amount_curve = SubResource("Curve_waqig")
-anim_speed_min = 11.49
-anim_speed_max = 11.49
+process_material = SubResource("10")
+draw_pass_1 = SubResource("12")
 
 [node name="PlayArea" type="Node3D" parent="."]
 
