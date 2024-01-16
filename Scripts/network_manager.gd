@@ -14,6 +14,8 @@ extends Node3D
 @export var stats_label: Label
 @export var stats_list_container: Control
 
+@export var difficulty_lablel: Label3D
+
 @export var start_timer: Timer
 @export var clock_timer: Timer
 
@@ -139,6 +141,7 @@ func update_stats_list():
 			entry.get_node("Score").text = str(player_stats_array[i][2] + player_stats_array[i][3])
 		stats_list.move_child(entry, i + 1)
 
+
 func players_not_ready() -> int:
 	var not_ready: int = 0
 	var spectating_players: Array[Node3D] = spectate_detector.get_overlapping_bodies()
@@ -254,3 +257,13 @@ func player_disconnected(id: int) -> void:
 	players_node.get_node(str(id)).queue_free()
 	print("Player (" + str(id) + ") disconnected")
 
+
+func _difficulty_plus_entered(body):
+	if enemies_node.difficulty < 20:
+		enemies_node.difficulty += 1
+		difficulty_lablel.text = str(enemies_node.difficulty)
+
+func _difficulty_minus_entered(body):
+	if enemies_node.difficulty > -20:
+		enemies_node.difficulty -= 1
+		difficulty_lablel.text = str(enemies_node.difficulty)

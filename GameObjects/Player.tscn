@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://dt4uuw0j4luc8"]
+[gd_scene load_steps=14 format=3 uid="uid://dt4uuw0j4luc8"]
 
 [ext_resource type="Texture2D" uid="uid://d2xvgmym8257j" path="res://Sprites/Shadow.png" id="1"]
 [ext_resource type="Texture2D" uid="uid://dhis4dtpi4rem" path="res://Sprites/Star.png" id="2"]
@@ -6,6 +6,9 @@
 [ext_resource type="PackedScene" uid="uid://dfbk3aknjha83" path="res://Models/LilBot.tscn" id="4_ywy82"]
 [ext_resource type="Material" uid="uid://064ko04ie1ui" path="res://Models/PlayerAntennaCap.material" id="9"]
 [ext_resource type="Material" uid="uid://b725bkffgvsqq" path="res://Models/PlayerMetal.material" id="10"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_00acp"]
+size = Vector3(4, 6, 4)
 
 [sub_resource type="BoxShape3D" id="18"]
 size = Vector3(2, 6, 2)
@@ -33,36 +36,38 @@ size = Vector2(0.8, 0.8)
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_2olmq"]
 properties/0/path = NodePath(".:transform")
 properties/0/spawn = true
-properties/0/sync = true
-properties/0/watch = false
+properties/0/replication_mode = 1
 properties/1/path = NodePath(".:velocity")
 properties/1/spawn = true
-properties/1/sync = true
-properties/1/watch = false
+properties/1/replication_mode = 1
 properties/2/path = NodePath(".:is_spectating")
 properties/2/spawn = true
-properties/2/sync = true
-properties/2/watch = false
+properties/2/replication_mode = 1
 properties/3/path = NodePath(".:enemies_destroyed")
 properties/3/spawn = true
-properties/3/sync = true
-properties/3/watch = false
+properties/3/replication_mode = 1
 properties/4/path = NodePath(".:time_alive")
 properties/4/spawn = true
-properties/4/sync = true
-properties/4/watch = false
+properties/4/replication_mode = 1
 properties/5/path = NodePath(".:is_dead")
 properties/5/spawn = true
-properties/5/sync = true
-properties/5/watch = false
+properties/5/replication_mode = 1
 properties/6/path = NodePath(".:powerup_time")
 properties/6/spawn = true
-properties/6/sync = true
-properties/6/watch = false
+properties/6/replication_mode = 1
 
 [node name="Player" type="CharacterBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
+collision_layer = 5
 script = ExtResource("3")
+
+[node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+collision_layer = 4
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("BoxShape3D_00acp")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -106,6 +111,7 @@ billboard = 1
 text = "Player"
 font_size = 256
 
+[connection signal="area_entered" from="Area3D" to="." method="_on_area_3d_area_entered"]
 [connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
 
 [editable path="LilBot"]

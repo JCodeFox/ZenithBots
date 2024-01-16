@@ -22,7 +22,7 @@ The Zenith is indicated by a blue background and star particles around the playe
 Created for Zenith, Word of the month on the Umbrella Life/Umbrella Land discord server."
 config/tags=PackedStringArray("3d", "multiplayer", "public")
 run/main_scene="res://Scenes/Menu.tscn"
-config/features=PackedStringArray("4.1")
+config/features=PackedStringArray("4.2")
 config/icon="res://Sprites/clockIcon.svg"
 
 [autoload]
