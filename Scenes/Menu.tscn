@@ -132,7 +132,7 @@ offset_bottom = -16.0
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.937255, 0.870588, 0.6, 1)
 theme_override_font_sizes/font_size = 20
-text = "by Jcodefox (foxtatoe)"
+text = "by Jcodefox (foxtatoe) & ninjason"
 
 [node name="Multiplayer" type="Control" parent="."]
 visible = false
