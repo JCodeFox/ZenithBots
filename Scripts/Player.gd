@@ -216,9 +216,11 @@ func set_zenith(value: bool = true, toggle: bool = false):
 	if powerup_time:
 		get_node("LilBot/AnimationPlayer").speed_scale = 4.0
 		get_node("CollisionShape3D").shape.size = Vector3(4.0, 6.0, 4.0)
+		get_node("Area3D/CollisionShape3D").shape.size = Vector3(6.0, 8.0, 6.0)
 	else:
 		get_node("LilBot/AnimationPlayer").speed_scale = 1.0
 		get_node("CollisionShape3D").shape.size = Vector3(2.0, 6.0, 2.0)
+		get_node("Area3D/CollisionShape3D").shape.size = Vector3(4.0, 6.0, 4.0)
 
 @rpc("any_peer")
 func get_hit(direction: Vector3) -> void:
@@ -257,11 +259,7 @@ func _on_area_3d_area_entered(area):
 	var body = area.get_parent()
 	if not multiplayer.is_server():
 		return
-	if body in get_parent().get_children():
-		if body.powerup_time:
-			body.rpc_id(body.get_multiplayer_authority(), "enemy_destroyed")
-			queue_free()
-		else:
-			var d = (body.transform.origin - transform.origin).normalized()
-			d.y = 0
-			body.bump(d)
+	if body.is_in_group("player"):
+		var d = (body.transform.origin - transform.origin).normalized()
+		d.y = 0
+		body.bump(d)

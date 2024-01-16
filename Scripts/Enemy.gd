@@ -58,7 +58,7 @@ func _physics_process(delta):
 func _on_Area_body_entered(body):
 	if not multiplayer.is_server():
 		return
-	if players_node and body in players_node.get_children():
+	if players_node and body.is_in_group("player"):
 		if body.powerup_time:
 			body.rpc_id(body.get_multiplayer_authority(), "enemy_destroyed")
 			queue_free()

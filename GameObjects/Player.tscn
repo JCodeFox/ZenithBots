@@ -56,7 +56,7 @@ properties/6/path = NodePath(".:powerup_time")
 properties/6/spawn = true
 properties/6/replication_mode = 1
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
 collision_layer = 5
 script = ExtResource("3")
