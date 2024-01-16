@@ -14,13 +14,13 @@
 lifetime_randomness = 1.0
 emission_shape = 1
 emission_sphere_radius = 1.0
+angle_max = 360.0
 direction = Vector3(1, 1, 1)
 spread = 90.0
 initial_velocity_min = -30.0
 initial_velocity_max = 30.0
 angular_velocity_min = -30.0
 angular_velocity_max = 30.0
-angle_max = 360.0
 scale_min = 0.1
 scale_max = 2.0
 collision_use_scale = true
@@ -95,7 +95,7 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[node name="World" type="Node3D" node_paths=PackedStringArray("players_node", "enemies_node", "clock", "health_bar", "game_over_popup", "play_detector", "spectate_detector", "lobby_status", "stats_label", "stats_list_container", "start_timer", "clock_timer")]
+[node name="World" type="Node3D" node_paths=PackedStringArray("players_node", "enemies_node", "clock", "health_bar", "game_over_popup", "play_detector", "spectate_detector", "lobby_status", "stats_label", "stats_list_container", "difficulty_lablel", "start_timer", "clock_timer")]
 editor_description = "Contains play area and lobby"
 script = ExtResource("1_k0ucf")
 stat_entry_scene = ExtResource("2_0f3pl")
@@ -110,11 +110,13 @@ spectate_detector = NodePath("Lobby/SpectatePlatform/Detector")
 lobby_status = NodePath("Lobby/LobbyStatus")
 stats_label = NodePath("CanvasLayer/Stats")
 stats_list_container = NodePath("CanvasLayer/StatsListContainer")
+difficulty_lablel = NodePath("Lobby/DifficultySelectors/Label3D2")
 start_timer = NodePath("StartTimer")
 clock_timer = NodePath("ClockTimer")
 
-[node name="Enemies" type="Node3D" parent="."]
+[node name="Enemies" type="Node3D" parent="." node_paths=PackedStringArray("players_node")]
 script = ExtResource("2")
+players_node = NodePath("../Players")
 
 [node name="Players" type="Node3D" parent="."]
 
@@ -225,6 +227,37 @@ monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Lobby/SpectatePlatform/Detector"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11, 0)
+shape = SubResource("BoxShape3D_jouy0")
+
+[node name="DifficultySelectors" type="Node3D" parent="Lobby"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.238, 500.117, 22.2094)
+
+[node name="Label3D" type="Label3D" parent="Lobby/DifficultySelectors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.1528, 2, 0)
+billboard = 1
+text = "-          Difficulty          +"
+font_size = 640
+
+[node name="Label3D2" type="Label3D" parent="Lobby/DifficultySelectors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.1528, 2, 7.66616)
+billboard = 1
+text = "0"
+font_size = 640
+
+[node name="Detector" type="Area3D" parent="Lobby/DifficultySelectors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lobby/DifficultySelectors/Detector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.68596, 11, 6.52619)
+shape = SubResource("BoxShape3D_jouy0")
+
+[node name="Detector2" type="Area3D" parent="Lobby/DifficultySelectors"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.553, 1, 0)
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Lobby/DifficultySelectors/Detector2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.92948, 11, 6.52619)
 shape = SubResource("BoxShape3D_jouy0")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
@@ -380,6 +413,8 @@ autoplay = true
 [connection signal="body_exited" from="Lobby/JoinPlatform/Detector" to="." method="on_player_not_ready"]
 [connection signal="body_entered" from="Lobby/SpectatePlatform/Detector" to="." method="on_player_ready"]
 [connection signal="body_exited" from="Lobby/SpectatePlatform/Detector" to="." method="on_player_not_ready"]
+[connection signal="body_entered" from="Lobby/DifficultySelectors/Detector" to="." method="_difficulty_plus_entered"]
+[connection signal="body_entered" from="Lobby/DifficultySelectors/Detector2" to="." method="_difficulty_minus_entered"]
 [connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Restart" to="CanvasLayer/PauseHandler" method="restart"]
 [connection signal="pressed" from="CanvasLayer/GameOver/VBoxContainer/Quit" to="CanvasLayer/PauseHandler" method="menu"]
 [connection signal="pressed" from="CanvasLayer/PauseMenu/VBoxContainer/Resume" to="CanvasLayer/PauseHandler" method="pause"]

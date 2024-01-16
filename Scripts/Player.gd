@@ -8,6 +8,8 @@ const DEACCEL: int = 8
 @export var WALK_SPEED: float = 10.0
 @export var RUN_SPEED: float = 40.0
 @export var jump_force: float = 10.0
+@export var IFrames: int = 0
+@export var IFrameMax: int = 10
 
 @export var health_bar: ProgressBar
 
@@ -65,6 +67,15 @@ var color: Color = Color.BLUE:
 ####################
 # Common Overrides #
 ####################
+
+func checkbump(body):
+	if not multiplayer.is_server():
+		return
+	if get_parent() and body in get_parent().get_children():
+		var d = (body.transform.origin - transform.origin).normalized()
+		d.y = 0
+		body.bump(d)
+
 func _enter_tree():
 	set_multiplayer_authority(int(str(name)))
 	
@@ -86,6 +97,9 @@ func _process(delta):
 		return
 	if not is_spectating and not is_dead:
 		time_alive += delta
+	
+	if IFrames > 0:
+		IFrames -= 1
 
 func _physics_process(delta):
 	if not is_multiplayer_authority():
@@ -138,9 +152,11 @@ func _physics_process(delta):
 	
 	move_and_slide()
 	
+	
 	if transform.origin.y < locations[current_location].death_barrier:
 		transform.origin = locations[current_location].spawn_point
 		health -= locations[current_location].barrier_hurt
+		
 
 ##################
 # Networky Stuff #
@@ -206,13 +222,27 @@ func set_zenith(value: bool = true, toggle: bool = false):
 
 @rpc("any_peer")
 func get_hit(direction: Vector3) -> void:
-	velocity += direction * 75
-	health -= 5
+	if IFrames == 0:
+		IFrames = IFrameMax
+		velocity += direction * 75
+		health -= 5
 	if not multiplayer.is_server():
 		return
 	if multiplayer.get_remote_sender_id() == multiplayer.get_unique_id():
 		return
 	rpc("get_hit", direction)
+
+@rpc("any_peer")
+func bump(direction: Vector3) -> void:
+	if IFrames == 0:
+		IFrames = IFrameMax
+		velocity += direction * 100
+	if not multiplayer.is_server():
+		return
+	if multiplayer.get_remote_sender_id() == multiplayer.get_unique_id():
+		return
+	rpc("bump", direction)
+
 
 @rpc("any_peer", "call_local")
 func enemy_destroyed() -> void:
@@ -221,3 +251,17 @@ func enemy_destroyed() -> void:
 	particle_node.transform.origin = transform.origin
 	particle_node.emitting = true
 	particle_node.restart()
+
+
+func _on_area_3d_area_entered(area):
+	var body = area.get_parent()
+	if not multiplayer.is_server():
+		return
+	if body in get_parent().get_children():
+		if body.powerup_time:
+			body.rpc_id(body.get_multiplayer_authority(), "enemy_destroyed")
+			queue_free()
+		else:
+			var d = (body.transform.origin - transform.origin).normalized()
+			d.y = 0
+			body.bump(d)
